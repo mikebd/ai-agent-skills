@@ -31,6 +31,20 @@ filter_lines() {
   fi
 }
 
+limit_lines() {
+  local max_lines="$1"
+  local input="$2"
+  local total
+  total=$(printf "%s" "${input}" | wc -l | tr -d ' ')
+  if [[ "${total}" -le "${max_lines}" ]]; then
+    printf "%s" "${input}"
+    return
+  fi
+  printf "%s" "${input}" | head -n "${max_lines}"
+  echo
+  echo "...and $((total - max_lines)) more (omitted to avoid long lists)"
+}
+
 echo "Fetching origin/develop..."
 git fetch origin develop
 
@@ -38,7 +52,7 @@ incoming_commits=$(git log --oneline --decorate --no-color HEAD..origin/develop 
 if [[ -n "${incoming_commits}" ]]; then
   echo
   echo "Incoming commits (HEAD..origin/develop):"
-  echo "${incoming_commits}"
+  limit_lines 50 "${incoming_commits}"
 
   if ! command -v codex >/dev/null 2>&1; then
     echo
@@ -62,6 +76,8 @@ Summarize these incoming git commits for a developer:
 - Highlight any config/env or doc changes.
 - Call out potential breaking changes or migrations.
 - Keep it concise.
+- Avoid long lists of files; summarize themes instead.
+- De-emphasize vendor/ changes unless they impact production code, testing, or operations (treat likely vendored dependency paths like third_party/, deps/, external/, libs/ similarly).
 
 COMMITS AND STATS:
 PROMPT
@@ -97,7 +113,7 @@ highlight_section() {
   if [[ -n "${matches}" ]]; then
     echo
     echo "${title}"
-    echo "${matches}"
+    limit_lines 40 "${matches}"
   fi
 }
 

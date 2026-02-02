@@ -15,6 +15,9 @@ Use this skill to update a repository's `develop` branch safely and surface conf
 2. If the working tree is dirty, stop and commit or stash before proceeding.
 3. Confirm you are already on `develop` before running the script; it will abort on any other branch.
 4. Review the incoming commit summary and any highlighted changes.
+   - DO NOT produce long lists of changed / added / removed files.
+   - DO NOT focus on changes in vendor/ (or vendored files generally that are materialized in the repo),
+     only highlight such changes if they have specific impact on production code, testing or operations.
 5. Update local settings or documentation follow-ups as needed.
 
 ## Quick Start
