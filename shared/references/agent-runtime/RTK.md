@@ -47,7 +47,7 @@ rg -n "int32\\(" ai-analytics/analysis_services/batching --glob "*test.go"
 rtk proxy rg -n "complex-regex-or-feature" .
 ```
 
-## Go Test Guidance (Codex Sessions)
+## Go Test Guidance
 
 - Prefer `rtk go test` for both unit and integration tests.
 - In Codex tool sessions, `rtk go test` may run sandboxed by default.

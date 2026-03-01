@@ -1,6 +1,6 @@
 # POSTGRES_AUDIT.md
 
-Purpose: reusable guidance for auditing live production Postgres data safely and reproducibly across Codex sessions.
+Purpose: reusable guidance for auditing live production Postgres data safely and reproducibly across coding agent sessions.
 
 ## Safety rules (non-negotiable)
 - Production access is read-only.
@@ -12,7 +12,7 @@ Purpose: reusable guidance for auditing live production Postgres data safely and
 
 ## Connection source
 - Use a dedicated DB-only env file when available.
-- Keep the env file path and default schema only in local wrapper docs under `~/.codex`.
+- Keep the env file path and default schema only in local wrapper docs (e.g. under `~/.codex`).
 - Do not print secrets in chat output.
 - Verify required keys exist before connecting: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, optional `DB_SCHEMA`, `DB_SSL_MODE`.
 

@@ -1,4 +1,4 @@
-# Data Analysis Cookbook (Codex)
+# Data Analysis Cookbook
 
 Last updated: 2026-02-27
 
@@ -137,7 +137,7 @@ Per-file stats outputs:
 find data -name "*.csv" | parallel "qsv stats {} > {.}.stats.csv"
 ```
 
-## Codex Session Guidance
+## Session Guidance
 - Start with qsv, xan, mlr, csvkit, jq, and yq for fast profiling and transforms.
 - Use uv with `--no-project` for ad-hoc Python analysis and plotting.
 - Use Rscript for quick statistical checks or ggplot output.
