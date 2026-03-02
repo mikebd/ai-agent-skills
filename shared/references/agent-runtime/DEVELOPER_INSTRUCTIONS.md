@@ -28,4 +28,5 @@ For git operations in this environment, use elevated permissions by default for:
 - git branch -d / -m
 - git worktree add / remove
 (instead of attempting sandboxed execution first).
+Always hold before running `git commit`: present status/diff/validation results and wait for explicit manual-review approval.
 ```
