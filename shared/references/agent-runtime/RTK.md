@@ -36,6 +36,12 @@ which rtk             # Verify correct binary
 - If native `rtk` is not suitable or not beneficial, run the raw command directly.
 - Use `rtk proxy` only when native `rtk` cannot express the required command or output behavior.
 
+### Verbose non-native fallback
+
+- For verbose commands without a suitable native `rtk` subcommand, use `shared/scripts/rtk_proxy.sh`.
+- `rtk_proxy.sh` preserves the wrapped command exit code and compacts captured output via `rtk read`.
+- Do not use this wrapper when true streaming/TTY output is required, or when output compaction could compromise correctness. In those cases use direct command execution or `rtk proxy`.
+
 Examples:
 
 ```bash
