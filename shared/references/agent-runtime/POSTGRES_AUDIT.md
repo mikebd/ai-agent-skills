@@ -5,7 +5,7 @@ Purpose: reusable guidance for auditing live Postgres data safely and reproducib
 Use this guide when the task involves auditing a live Postgres database or exporting audit snapshots.
 
 ## Safety rules (non-negotiable)
-- Production access is read-only.
+- Live database access is read-only.
 - Prefer metadata-first checks before data pulls.
 - Keep query volume and result volume minimal unless explicitly approved.
 - Use bounded queries by default (`LIMIT`, time window, key-scoped joins).
