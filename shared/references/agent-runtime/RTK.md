@@ -2,6 +2,8 @@
 
 **Usage**: Token-optimized CLI proxy (60-90% savings on dev operations)
 
+Use this guide at session start and before selecting shell commands.
+
 ## Meta commands
 
 ```bash

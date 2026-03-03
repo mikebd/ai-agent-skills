@@ -16,14 +16,9 @@ The general pattern is:
 2. Keep local agent-home config thin, pointing to those docs.
 3. Keep machine-local/private values out of repo files.
 
-## Doc ownership map
+## Doc ownership
 
-- `DEVELOPER_INSTRUCTIONS.md`: startup/runtime behavior contract used by agent config pointers.
-- `RTK.md`: command-selection and wrapper usage policy for RTK.
-- `POSTGRES_AUDIT.md`: reusable production-DB audit safety/workflow/runbook.
-- `DATA_ANALYSIS.md`: ad-hoc offline analysis tooling and recipes.
-- `ACRONYMS.md`: stable shorthand for prompting against RMAR/agent docs.
-- `POSTGRES_AUDIT.local-wrapper.example.md`: local/private wrapper template; copy to private config and customize.
+See [`DOC_MAP.md`](./DOC_MAP.md) for the single-source ownership map of RMAR documents.
 
 ## Agent-agnostic adaptation
 

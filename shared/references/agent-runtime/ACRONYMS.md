@@ -2,13 +2,18 @@
 
 Purpose: stable shorthand for prompting across sessions and agents.
 
-## Public RMAR acronyms
+Use this guide when prompts or referenced docs include acronyms that may be ambiguous across sessions.
+
+## General
 - `AMD`: `AGENTS.md`
+- `RMD`: `README.md`
 - `RMAR`: Repo Managed Agent Runtime (`shared/references/agent-runtime/`)
-- `DI`: Developer Instructions (`DEVELOPER_INSTRUCTIONS.md`)
-- `RTK`: Rust Token Killer guidance (`RTK.md`)
-- `PA`: Postgres Audit runbook (`POSTGRES_AUDIT.md`)
+
+## RMAR references
 - `DA`: Data Analysis cookbook (`DATA_ANALYSIS.md`)
+- `DI`: Developer Instructions (`DEVELOPER_INSTRUCTIONS.md`)
+- `PA`: Postgres Audit runbook (`POSTGRES_AUDIT.md`)
+- `RTK`: Rust Token Killer guidance (`RTK.md`)
 
 ## Usage guidance
 - Expand an acronym on first use in a new session when ambiguity is possible.

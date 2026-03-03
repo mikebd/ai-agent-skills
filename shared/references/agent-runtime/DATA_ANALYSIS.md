@@ -5,6 +5,8 @@ Last updated: 2026-02-27
 ## Goal
 Fast ad-hoc EDA, statistics, and visualization workflows without creating a project unless needed.
 
+Use this guide when the task is exploratory analysis, statistics, or visualization over local/exported data.
+
 ## Current Footprint (Installed)
 - qsv, xan, mlr (Miller), csvkit
 - visidata

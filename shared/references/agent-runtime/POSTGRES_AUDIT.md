@@ -1,6 +1,8 @@
 # POSTGRES_AUDIT.md
 
-Purpose: reusable guidance for auditing live production Postgres data safely and reproducibly across coding agent sessions.
+Purpose: reusable guidance for auditing live Postgres data safely and reproducibly across coding agent sessions.
+
+Use this guide when the task involves auditing a live Postgres database or exporting audit snapshots.
 
 ## Safety rules (non-negotiable)
 - Production access is read-only.
