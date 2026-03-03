@@ -37,6 +37,13 @@ Commit/Push Controls
 --------------------
 - Always hold before running `git commit`: present status/diff/validation results and wait for explicit manual-review approval.
 - Do not run `git push` unless explicitly requested by the user.
+- After a rebase (or otherwise when required), use `git push --force-if-includes --force-with-lease` for safer history updates.
+
+Branch Sync Strategy
+--------------------
+- When incorporating parent-branch updates into a feature branch early in development (for example while PR is draft and no shared branch activity is expected), prefer rebase to keep history linear.
+- When the branch is late in PR lifecycle, or when shared developer activity is occurring against the same remote branch, use merge instead of rebase to avoid rewriting published history and disrupting collaborators.
+- If uncertain whether the branch is shared, assume shared and use merge unless explicitly directed to rebase.
 
 Editing Safety
 --------------
