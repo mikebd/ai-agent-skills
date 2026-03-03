@@ -2,7 +2,7 @@
 
 **Usage**: Token-optimized CLI proxy (60-90% savings on dev operations)
 
-## Meta Commands (always use rtk directly)
+## Meta commands
 
 ```bash
 rtk gain              # Show token savings analytics
@@ -10,7 +10,7 @@ rtk gain --history    # Show command usage history with savings
 rtk proxy <cmd>       # Execute raw command without filtering (debug/edge cases)
 ```
 
-## Installation Verification
+## Installation verification
 
 ```bash
 rtk --version         # Should show: rtk X.Y.Z
@@ -18,7 +18,7 @@ rtk gain              # Should work (not "command not found")
 which rtk             # Verify correct binary
 ```
 
-## Session Command Selection Guidance
+## Session command selection guidance
 
 - Discover available `rtk` commands at the beginning of each session by running `rtk`.
 - When unsure about usage/options for a native command, run `rtk help <command>`.
@@ -26,28 +26,28 @@ which rtk             # Verify correct binary
 - Ignore Claude-specific commands: `cc-economics`, `discover`, `learn`, `hook-audit`.
 - Some `rtk` commands are repository-language-specific; prioritize generic commands or ones aligned to languages in use (`go`, `javascript`/`typescript`/`node`, `rust`, `python`).
 
-### Command Selection Rules (strict)
+### Command selection rules (strict)
 
 - Prefer native `rtk` subcommands first for routine operations.
 - For text search, default to `rtk grep` (not `rtk proxy rg`) unless `rtk grep` cannot express the needed search behavior.
 - For git operations, prefer `rtk git ...` where supported.
 - If native `rtk` is not suitable or not beneficial, run the raw command directly.
-- Avoid `rtk proxy` in normal workflow; reserve it for debugging or rare edge cases.
+- Use `rtk proxy` only when native `rtk` cannot express the required command or output behavior.
 
 Examples:
 
 ```bash
 # Preferred
-rtk grep -n "int32\\(" ai-analytics/analysis_services/batching -- --glob "*test.go"
+rtk grep -n "int32\\(" ./path/to/package -- --glob "*test.go"
 
 # Also acceptable when rtk adds no value
-rg -n "int32\\(" ai-analytics/analysis_services/batching --glob "*test.go"
+rg -n "int32\\(" ./path/to/package --glob "*test.go"
 
 # Debug/edge-case fallback only
 rtk proxy rg -n "complex-regex-or-feature" .
 ```
 
-## Go Test Guidance
+## Go test guidance
 
 - Prefer `rtk go test` for both unit and integration tests.
 - In Codex tool sessions, `rtk go test` may run sandboxed by default.

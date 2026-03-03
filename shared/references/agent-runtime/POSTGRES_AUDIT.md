@@ -49,6 +49,11 @@ Purpose: reusable guidance for auditing live production Postgres data safely and
   - counts,
   - candidate row IDs.
 
+## Post-snapshot analysis (offline-first)
+- After export, perform deeper analysis against local snapshot data when possible.
+- Preferred tools and recipes are in `DATA_ANALYSIS.md` (`qsv`, `duckdb`, `uv`, `jq`, `mlr`, etc.).
+- Re-query live databases only when a local snapshot cannot answer the question.
+
 ## Query design guidance
 - Filter on indexed columns where possible.
 - Avoid `SELECT *` unless explicitly requested.
@@ -64,7 +69,6 @@ Purpose: reusable guidance for auditing live production Postgres data safely and
 ## Escalation and permissions
 - If Docker socket or network access is blocked by sandbox, request escalation.
 - Keep escalated commands narrowly scoped to read-only objectives.
-
 
 ## Before/after rerun comparison protocol
 Use this when upcoming work may overwrite existing result rows.

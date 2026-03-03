@@ -9,9 +9,8 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 
 ```text
 At session start, read shared/references/agent-runtime/RTK.md before running commands.
-When running shell commands that may produce verbose output (git, ls, cat, grep, tests, docker, kubectl, etc),
-wrap them with `rtk`, e.g. `rtk git status`, `rtk ls -la`, `rtk grep "x" .`.
-RTK reference: shared/references/agent-runtime/RTK.md
+Acronym glossary: shared/references/agent-runtime/ACRONYMS.md
+RTK command-selection policy: shared/references/agent-runtime/RTK.md
 Data analysis cookbook: shared/references/agent-runtime/DATA_ANALYSIS.md
 For ad-hoc EDA/statistics/visualization sessions, consult shared/references/agent-runtime/DATA_ANALYSIS.md first.
 For test/lint workflows, do NOT request escalated permissions on first attempt.
@@ -29,4 +28,5 @@ For git operations in this environment, use elevated permissions by default for:
 - git worktree add / remove
 (instead of attempting sandboxed execution first).
 Always hold before running `git commit`: present status/diff/validation results and wait for explicit manual-review approval.
+Do not run `git push` unless explicitly requested by the user.
 ```
