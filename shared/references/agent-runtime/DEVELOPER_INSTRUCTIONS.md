@@ -45,6 +45,14 @@ Branch Sync Strategy
 - When the branch is late in PR lifecycle, or when shared developer activity is occurring against the same remote branch, use merge instead of rebase to avoid rewriting published history and disrupting collaborators.
 - If uncertain whether the branch is shared, assume shared and use merge unless explicitly directed to rebase.
 
+Assumption Handling
+-------------------
+- Prefer direct execution by default; switch to explicit plan mode when scope, risk, or ambiguity is high.
+- Validate key assumptions early and state them clearly before substantial implementation.
+- Raise unclear or unspecified requirements for review when they are likely to affect behavior, contracts, safety, or rework cost.
+- Do not guess for safety-critical, schema-contract, or irreversible changes; require explicit confirmation.
+- For low-risk gaps, make the smallest reasonable assumption, proceed, and document it in progress updates.
+
 Editing Safety
 --------------
 - When editing lists or ordered steps, do not reorder items unless order is confirmed non-semantic.
