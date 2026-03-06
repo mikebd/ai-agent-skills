@@ -54,6 +54,9 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 ## Script Reliability
 - If an ad-hoc shell script is complex (multi-step exports/transforms, quoting-sensitive SQL/sed/awk, or repeated retries due to shell parsing), and is likely to be reused, materialize it as a repo script instead of regenerating it ad hoc.
 - Prefer a canonical parameterized script + documented flags over one-off inline commands to reduce quoting drift and behavioral variation across runs/sessions.
+- When shell workflows require embedded `awk`/`python` (or similar) blocks
+  beyond trivial one-liners, materialize them as standalone helper scripts and
+  call them from shell.
 - After creating or editing shell scripts, run `shellcheck` when available before first use; if unavailable, note that explicitly and proceed with cautious validation (`bash -n`, small-scope dry run first).
 
 ## RMAR Update Policy
