@@ -109,6 +109,9 @@ Use this when upcoming work may overwrite existing result rows.
 - Use `bash -lc 'set -euo pipefail'` (not `sh`) and helper functions:
   - `run_copy(sql, out)` for `\\copy (...) TO STDOUT WITH CSV HEADER`
   - `run_scalar(sql)` for single-value outputs
+- For timestamp bounds in inline `\\copy` SQL, use cast literals only:
+  - `'YYYY-MM-DD HH:MM:SS+00'::timestamptz`
+  - avoid `TIMESTAMPTZ '...'` form in shell-embedded `\\copy` queries.
 - Prefer scalar query shape without embedded empty-string literals when possible:
   - `select max(ar.created_at)::text ...` (instead of `coalesce(max(...)::text,'')`)
 - Write scalars to files, then compose `manifest.txt` from those files.
@@ -119,5 +122,7 @@ Use this when upcoming work may overwrite existing result rows.
 2. Source env via `set -a; . <PROJECT_DB_ENV_FILE>; set +a`.
 3. Resolve `DBS=${DB_SCHEMA:-<PROJECT_DEFAULT_SCHEMA>}` once.
 4. Run exports with `run_copy` and scalars with `run_scalar`.
-5. Avoid nested quote gymnastics inside SQL; prefer simpler SQL forms.
-6. Emit `max_analytics_run_created_at.txt` and include a ready-to-use future filter in `manifest.txt`.
+5. Use SQL-safe window literal variables (for example `WINDOW_START_SQL`,
+   `WINDOW_END_SQL`) and reuse them across scoped queries.
+6. Avoid nested quote gymnastics inside SQL; prefer simpler SQL forms.
+7. Emit `max_analytics_run_created_at.txt` and include a ready-to-use future filter in `manifest.txt`.
