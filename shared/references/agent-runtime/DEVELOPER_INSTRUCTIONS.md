@@ -59,6 +59,12 @@ Editing Safety
 - Alphabetize only when order does not affect behavior, execution, or interpretation.
 - If order is semantic (for example wiring, initialization, migrations, pipelines, or handler chains), preserve it and add a brief note when non-obvious.
 
+Script Reliability
+------------------
+- If an ad-hoc shell script is complex (multi-step exports/transforms, quoting-sensitive SQL/sed/awk, or repeated retries due to shell parsing), and is likely to be reused, materialize it as a repo script instead of regenerating it ad hoc.
+- Prefer a canonical parameterized script + documented flags over one-off inline commands to reduce quoting drift and behavioral variation across runs/sessions.
+- After creating or editing shell scripts, run `shellcheck` when available before first use; if unavailable, note that explicitly and proceed with cautious validation (`bash -n`, small-scope dry run first).
+
 RMAR Update Policy
 ------------------
 When asked to update the RMAR:
