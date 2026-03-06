@@ -109,6 +109,8 @@ Use this when upcoming work may overwrite existing result rows.
 - Use `bash -lc 'set -euo pipefail'` (not `sh`) and helper functions:
   - `run_copy(sql, out)` for `\\copy (...) TO STDOUT WITH CSV HEADER`
   - `run_scalar(sql)` for single-value outputs
+- For text/markdown artifacts emitted from shell scripts, use quoted heredocs
+  (`<<'EOF'`) so backticks, `$`, and `\\` are not interpolated accidentally.
 - For timestamp bounds in inline `\\copy` SQL, use cast literals only:
   - `'YYYY-MM-DD HH:MM:SS+00'::timestamptz`
   - avoid `TIMESTAMPTZ '...'` form in shell-embedded `\\copy` queries.
