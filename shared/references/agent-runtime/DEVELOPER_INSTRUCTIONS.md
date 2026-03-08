@@ -20,6 +20,10 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 - When working in any repo that uses Node-based tooling, if `npm install`, `npm ci`, `npx`, or similar npm commands are likely to require registry/network access, request escalated execution immediately instead of attempting the command in the sandbox first.
 - Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "install"]`, `["npm", "ci"]`, or `["npm", "run", "start"]`.
 
+## Python / uv Network Workflows
+- When working in any repo that uses Python-based tooling, if `uv sync`, `uv lock`, `uv pip install`, `uv run` with dependency resolution, `pip install`, `poetry install`, or similar commands are likely to require package-index/network access, request escalated execution immediately instead of attempting the command in the sandbox first.
+- Prefer narrowly scoped `prefix_rule` approvals such as `["uv", "sync"]`, `["uv", "lock"]`, `["uv", "pip", "install"]`, `["pip", "install"]`, or `["poetry", "install"]`.
+
 ## Git Permissions
 - For git operations in this environment, use elevated permissions by default for:
   - git add
