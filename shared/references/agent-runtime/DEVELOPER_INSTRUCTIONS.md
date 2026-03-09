@@ -24,6 +24,10 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 - When working in any repo that uses Python-based tooling, if `uv sync`, `uv lock`, `uv pip install`, `uv run` with dependency resolution, `pip install`, `poetry install`, or similar commands are likely to require package-index/network access, request escalated execution immediately instead of attempting the command in the sandbox first.
 - Prefer narrowly scoped `prefix_rule` approvals such as `["uv", "sync"]`, `["uv", "lock"]`, `["uv", "pip", "install"]`, `["pip", "install"]`, or `["poetry", "install"]`.
 
+### Local Dev Server Workflows
+- When starting a local development server that is expected to bind to a TCP port for browser, API, or webhook access, request escalated execution immediately instead of first attempting to run it in the sandbox.
+- Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "run", "start"]`, `["npx", "ng", "serve"]`, `["vite"]`, `["next", "dev"]`, or similar repo-appropriate dev-server commands.
+
 ## Git Permissions
 - For git operations in this environment, use elevated permissions by default for:
   - git add
