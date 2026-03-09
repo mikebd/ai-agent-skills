@@ -75,5 +75,6 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 When asked to update the RMAR:
 - Propose the best wording that captures the request's intent, is concise, and improves agent direction; then apply it, unless the user specifies exact wording.
   Confirm if the change alters meaning.
+- After making any RMAR change, reread the updated RMAR document(s) before continuing so subsequent actions follow the new instructions.
 - For examples captured in RMAR, anonymize content so it does not reflect private repository contents.
 - Keep RMAR documents consistent, cohesive, non-conflicting, and non-contradicting as a set.
