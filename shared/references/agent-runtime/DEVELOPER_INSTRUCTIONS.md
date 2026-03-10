@@ -41,6 +41,13 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
   - git worktree add / remove
   (instead of attempting sandboxed execution first).
 
+### Git Lock Safety
+- Never run git index-writing commands in parallel (`git add`, `git commit`, `git merge`, `git rebase`, `git checkout`, `git stash`, etc.); execute them serially.
+- If a git command fails with `index.lock`:
+  - Check whether another git process is still active before removing the lock.
+  - Remove `.git/index.lock` only when confirmed stale, then retry the original command once.
+- After lock recovery, run `git status --short` before continuing to confirm repository state is consistent.
+
 ## Commit/Push Controls
 - Always hold before running `git commit`: present status/diff/validation results and wait for explicit manual-review approval.
 - Do not run `git push` unless explicitly requested by the user.
