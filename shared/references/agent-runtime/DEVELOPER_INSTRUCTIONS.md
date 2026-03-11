@@ -16,6 +16,10 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 - Run in sandbox first, using /tmp caches when needed (e.g. GOCACHE, GOMODCACHE, GOLANGCI_LINT_CACHE),
   and escalate only if sandbox execution actually fails for reasons unrelated to cache location.
 
+### Frontend Browser Test Workflows
+- For browser-driven frontend test runners that start local servers or bind TCP ports (for example `ng test`/Karma, Playwright, Cypress), request escalated execution immediately instead of sandbox-first.
+- Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "test"]`, `["ng", "test"]`, `["npx", "playwright", "test"]`, or `["npx", "cypress", "run"]`.
+
 ### Node / npm Network Workflows
 - When working in any repo that uses Node-based tooling, if `npm install`, `npm ci`, `npx`, or similar npm commands are likely to require registry/network access, request escalated execution immediately instead of attempting the command in the sandbox first.
 - Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "install"]`, `["npm", "ci"]`, or `["npm", "run", "start"]`.
