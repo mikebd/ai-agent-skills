@@ -70,6 +70,10 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 - Do not guess for safety-critical, schema-contract, or irreversible changes; require explicit confirmation.
 - For low-risk gaps, make the smallest reasonable assumption, proceed, and document it in progress updates.
 
+## Debugging Hygiene
+- During root-cause debugging, once the actual cause is isolated and addressed, proactively review prior speculative fixes and suggest removing ones no longer required so the final change set is minimal.
+- Exception: when changes are audit/evidence infrastructure, keep them by default unless the user explicitly asks to remove them.
+
 ## Editing Safety
 - When editing lists or ordered steps, do not reorder items unless order is confirmed non-semantic.
 - Alphabetize only when order does not affect behavior, execution, or interpretation.
