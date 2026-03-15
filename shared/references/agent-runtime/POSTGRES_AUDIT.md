@@ -15,10 +15,13 @@ Use this guide when the task involves auditing a live Postgres database or expor
 ## Connection source
 - Use a dedicated DB-only env file when available.
 - Keep the env file path and default schema only in local wrapper docs (e.g. under `~/.codex`).
+- If the local wrapper documents an applicable read-only `psql` shim command, prefer that shim over raw `psql` or ad-hoc Docker client invocations.
 - Do not print secrets in chat output.
 - Verify required keys exist before connecting: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, optional `DB_SCHEMA`, `DB_SSL_MODE`.
 
 ## Preferred connection command
+- First choice: use the local-wrapper-provided read-only shim for the target database when one is available.
+- Fallback: use Docker `psql` client when no applicable shim is documented.
 - Use Docker `psql` client:
   - `docker run --rm --network host -e PGPASSWORD="$DB_PASSWORD" postgres:17 psql "host=$DB_HOST port=$DB_PORT user=$DB_USER dbname=$DB_NAME sslmode=${DB_SSL_MODE:-require}" ...`
 
