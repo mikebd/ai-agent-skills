@@ -10,6 +10,9 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 ## Bootstrap
 - At session start, read shared/references/agent-runtime/DOC_MAP.md.
 - Use DOC_MAP.md as the source of truth for which RMAR docs to read for the current task.
+- Before selecting local shell commands, read the RMAR docs that govern command choice for the current task.
+- If local shell commands, search commands, git commands, or Go test/build/vet commands are likely, read shared/references/agent-runtime/RTK.md before choosing commands.
+- Treat RTK guidance as operational policy, not optional advice, when RTK.md applies.
 
 ## Execution Safety
 - For test/lint workflows, do NOT request escalated permissions on first attempt.

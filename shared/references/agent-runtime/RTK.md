@@ -4,6 +4,27 @@
 
 Use this guide at session start and before selecting shell commands.
 
+## Trigger semantics
+
+Read and apply this document when:
+- the task is likely to use local shell commands
+- the task is likely to use text search, git commands, or Go test/build/vet commands
+- or `command -v rtk` succeeds
+
+When this document applies:
+- run `command -v rtk` once near session start if RTK availability is not already known
+- if `rtk` is available, treat RTK-native command selection as the default for supported operations
+- do not silently bypass RTK when a suitable RTK-native command exists
+- if a raw command is chosen instead of RTK, state the reason briefly in commentary or in the final response when no commentary is sent
+
+## Session preflight
+
+When RTK.md applies:
+- verify RTK availability with `command -v rtk`
+- if RTK is present, run `rtk --version` or `rtk help` once to confirm the binary is usable
+- treat RTK as active for the remainder of the session unless a command-specific exception applies
+- when unsure about a subcommand, run `rtk help <command>` before falling back to a raw command
+
 ## Meta commands
 
 ```bash
@@ -22,7 +43,6 @@ which rtk             # Verify correct binary
 
 ## Session command selection guidance
 
-- Discover available `rtk` commands at the beginning of each session by running `rtk`.
 - When unsure about usage/options for a native command, run `rtk help <command>`.
 - Ignore: `rtk gain`.
 - Ignore Claude-specific commands: `cc-economics`, `discover`, `learn`, `hook-audit`.
@@ -33,8 +53,22 @@ which rtk             # Verify correct binary
 - Prefer native `rtk` subcommands first for routine operations.
 - For text search, default to `rtk grep` (not `rtk proxy rg`) unless `rtk grep` cannot express the needed search behavior.
 - For git operations, prefer `rtk git ...` where supported.
-- If native `rtk` is not suitable or not beneficial, run the raw command directly.
+- For Go test/build/vet operations, prefer `rtk go test`, `rtk go build`, and `rtk go vet` where supported.
+- If native `rtk` is not suitable or not beneficial, run the raw command directly only after checking whether RTK has a suitable native subcommand.
 - Use `rtk proxy` only when native `rtk` cannot express the required command or output behavior.
+
+### Raw-command exceptions
+
+Raw commands are allowed when:
+- RTK lacks the needed feature or flags
+- exact raw output is required for correctness, parsing, or review
+- true streaming or TTY behavior is required
+- RTK output compaction would hide diagnostics that matter for the task
+- sandbox, escalation, or environment behavior requires a direct command and RTK changes that behavior materially
+
+When using a raw command under one of these exceptions:
+- prefer the narrowest raw command that preserves correctness
+- state the exception briefly so RTK bypasses stay auditable
 
 ### Verbose non-native fallback
 
