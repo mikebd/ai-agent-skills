@@ -22,6 +22,11 @@ Use this guide when the task is exploratory analysis, statistics, or visualizati
 - jupyterlab (via uv tool): notebook workflow when needed.
 
 ## Project-less Python with uv (canonical)
+Interpreter rule:
+- Outside a tool-managed context, use `python3` for ad-hoc analysis commands.
+- Do not assume a bare `python` shim exists.
+- Inside `uv run ... python ...`, `python` is the interpreter selected by `uv`, which is the preferred project-less path when ephemeral dependencies are needed.
+
 Run a script with ephemeral dependencies:
 ```bash
 uv run --no-project --with pandas --with matplotlib python analysis.py
