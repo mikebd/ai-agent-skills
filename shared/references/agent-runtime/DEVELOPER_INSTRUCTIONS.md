@@ -19,6 +19,18 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 - Run in sandbox first, using /tmp caches when needed (e.g. GOCACHE, GOMODCACHE, GOLANGCI_LINT_CACHE),
   and escalate only if sandbox execution actually fails for reasons unrelated to cache location.
 
+## Machine-Local Operational Notes
+- For stable, non-secret, developer/machine-specific runtime assumptions that
+  are useful across sessions but do not belong in repo docs or branch context,
+  prefer the machine-local note `~/.codex/LOCAL-MACHINE.md`.
+- Use it for non-secret operational facts such as local shim behavior, Docker
+  fallback behavior, preferred local tool paths, and similar persistent machine
+  assumptions.
+- Do not store secrets there unless a more specific runtime guide explicitly
+  defines a secret-bearing local wrapper format.
+- Treat it as a developer-local overlay, not shared repo policy.
+- Read it only when relevant to the current task.
+
 ### Frontend Browser Test Workflows
 - For browser-driven frontend test runners that start local servers or bind TCP ports (for example `ng test`/Karma, Playwright, Cypress), request escalated execution immediately instead of sandbox-first.
 - Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "test"]`, `["ng", "test"]`, `["npx", "playwright", "test"]`, or `["npx", "cypress", "run"]`.
