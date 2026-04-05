@@ -1,21 +1,22 @@
 # Data Analysis Cookbook
 
-Last updated: 2026-02-27
+Last updated: 2026-04-05
 
 ## Goal
 Fast ad-hoc EDA, statistics, and visualization workflows without creating a project unless needed.
 
 Use this guide when the task is exploratory analysis, statistics, or visualization over local/exported data.
 
+For format-specific extraction, querying, and reshaping workflows that also apply outside analysis tasks, use `TEXT_QUERYING.md`.
+
 ## Current Footprint (Installed)
-- qsv, xan, mlr (Miller), csvkit
 - visidata
 - duckdb, sqlite3
-- jq, yq
 - gnuplot, graphviz (dot)
 - python3, uv
 - R, Rscript
 - parallel
+- Querying and text-shaping tools from `TEXT_QUERYING.md` (`csvkit`, `jg`, `jq`, `mlr`, `qsv`, `rg`, `xan`, `yq`, etc.)
 
 ## Adjacent Tools Worth Adding (Optional)
 - radian: better interactive R REPL experience.
@@ -86,16 +87,11 @@ csvstat data.csv
 csvsql --query "select category, avg(value) as avg_value from stdin group by category" data.csv
 ```
 
-## JSON and YAML Workflows
-JSON to CSV preview:
-```bash
-jq -r '.[] | [.id,.name,.score] | @csv' data.json | qsv table
-```
-
-YAML to JSON plus query:
-```bash
-yq -o=json "." config.yaml | jq ".services[] | {name,port}"
-```
+## Format Extraction Entry Point
+Before heavier analysis, use `TEXT_QUERYING.md` to:
+- inspect nested JSON, YAML, or TOML with `jg`, `jq`, and `yq`
+- shape CSV or TSV inputs with `csvkit`, `mlr`, `qsv`, or `xan`
+- filter raw logs or text exports with `awk`, `rg`, or `sed`
 
 ## SQL-Style Local Analytics
 SQLite quick load and query:
@@ -145,7 +141,7 @@ find data -name "*.csv" | parallel "qsv stats {} > {.}.stats.csv"
 ```
 
 ## Session Guidance
-- Start with qsv, xan, mlr, csvkit, jq, and yq for fast profiling and transforms.
+- Start with the format/query tools in `TEXT_QUERYING.md` for profiling and extraction.
 - Use uv with `--no-project` for ad-hoc Python analysis and plotting.
 - Use Rscript for quick statistical checks or ggplot output.
 - Use duckdb or sqlite for heavier joins, group-by, and window logic.

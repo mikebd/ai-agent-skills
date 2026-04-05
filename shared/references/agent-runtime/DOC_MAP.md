@@ -4,11 +4,12 @@ Purpose: single source of truth for what each RMAR document governs.
 
 ## Ownership
 - [`ACRONYMS.md`](./ACRONYMS.md): stable shorthand for prompting against RMAR and related agent docs.
-- [`DATA_ANALYSIS.md`](./DATA_ANALYSIS.md): ad-hoc offline analysis tooling and recipes.
+- [`DATA_ANALYSIS.md`](./DATA_ANALYSIS.md): ad-hoc offline EDA, statistics, and visualization workflows.
 - [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md): startup/runtime behavior contract used by agent config pointers.
 - [`POSTGRES_AUDIT.local-wrapper.example.md`](./POSTGRES_AUDIT.local-wrapper.example.md): local/private wrapper template; copy to private config and customize.
 - [`POSTGRES_AUDIT.md`](./POSTGRES_AUDIT.md): reusable database-audit safety/workflow/runbook.
 - [`RTK.md`](./RTK.md): command-selection and wrapper usage policy for RTK.
+- [`TEXT_QUERYING.md`](./TEXT_QUERYING.md): local querying, extraction, and reshaping of structured, semi-structured, and plain-text files.
 
 ## Trigger semantics policy
 - Keep [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md) minimal and avoid duplicating task-specific trigger logic already owned by mapped docs.
