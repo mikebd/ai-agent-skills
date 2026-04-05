@@ -14,6 +14,7 @@ Use this guide when prompts or referenced docs include acronyms that may be ambi
 - `DI`: Developer Instructions (`DEVELOPER_INSTRUCTIONS.md`)
 - `PA`: Postgres Audit runbook (`POSTGRES_AUDIT.md`)
 - `RTK`: Rust Token Killer guidance (`RTK.md`)
+- `TQ`: Text Querying cookbook (`TEXT_QUERYING.md`)
 
 ## Usage guidance
 - Expand an acronym on first use in a new session when ambiguity is possible.
