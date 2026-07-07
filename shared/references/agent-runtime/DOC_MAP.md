@@ -4,6 +4,7 @@ Purpose: single source of truth for what each RMAR document governs.
 
 ## Ownership
 - [`ACRONYMS.md`](./ACRONYMS.md): stable shorthand for prompting against RMAR and related agent docs.
+- [`CODE_QUALITY.md`](./CODE_QUALITY.md): implementation planning quality defaults, TDD/red-green workflow, behavior-locking tests, and practical test-scope decisions.
 - [`DATA_ANALYSIS.md`](./DATA_ANALYSIS.md): ad-hoc offline EDA, statistics, and visualization workflows.
 - [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md): startup/runtime behavior contract used by agent config pointers.
 - [`POSTGRES_AUDIT.local-wrapper.example.md`](./POSTGRES_AUDIT.local-wrapper.example.md): local/private wrapper template; copy to private config and customize.
