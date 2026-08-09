@@ -109,6 +109,45 @@ fi
 
 incoming_files=$(git diff --name-only "HEAD..${upstream_ref}" || true)
 
+new_env_examples=$(git diff --diff-filter=A --name-only "HEAD..${upstream_ref}" --)
+
+copy_new_env_examples_for_primary_checkout() {
+  local common_git_dir primary_checkout relative_path target_dir
+
+  common_git_dir=$(git rev-parse --git-common-dir)
+  if [[ "${common_git_dir}" != /* ]]; then
+    common_git_dir="${repo_root}/${common_git_dir}"
+  fi
+  common_git_dir=$(cd "${common_git_dir}" && pwd -P)
+  primary_checkout=$(cd "$(dirname "${common_git_dir}")" && pwd -P)
+
+  if [[ "${repo_root}" != "${primary_checkout}" ]]; then
+    return
+  fi
+
+  while IFS= read -r relative_path; do
+    [[ "${relative_path}" == *.env.example ]] || continue
+
+    if [[ "${relative_path}" == */.env.example ]]; then
+      target_dir="${relative_path%/.env.example}"
+    else
+      target_dir="."
+    fi
+
+    if [[ ! -d "${repo_root}/${target_dir}" ]]; then
+      continue
+    fi
+
+    if [[ -e "${repo_root}/${target_dir}/.env" || -L "${repo_root}/${target_dir}/.env" ]]; then
+      echo "Skipping ${target_dir}/.env; it already exists." >&2
+      continue
+    fi
+
+    cp "${repo_root}/${relative_path}" "${repo_root}/${target_dir}/.env"
+    echo "Copied ${relative_path} to ${target_dir}/.env."
+  done <<< "${new_env_examples}"
+}
+
 highlight_section() {
   local title="$1"
   local matches="$2"
@@ -135,3 +174,4 @@ highlight_section "Config/env usage changes in code (heuristic):" "${config_line
 echo
 echo "Pulling ${upstream_ref}..."
 git pull origin "${current_branch}"
+copy_new_env_examples_for_primary_checkout

@@ -38,6 +38,10 @@ Use this skill to update the repository's current branch safely and surface conf
   - Config-like files (common extensions and config/settings paths)
   - Documentation changes (README and docs/ or other .md files)
   - Added/changed lines that look like env/config reads
+- After pulling, when running from a primary checkout, copy each newly added
+  `.env.example` to `.env` in the same directory when that parent directory
+  exists and `.env` does not already exist. Never clobber a pre-existing
+  `.env`, including a symlink; the script skips it with a warning.
 - `git pull origin <current-branch>`
 
 ## Notes
