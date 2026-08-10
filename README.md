@@ -10,6 +10,7 @@ Agentic workflow utilities and skills.
 - `shared/scripts`: Cross-agent utilities
 - `shared/references`: Cross-agent docs and references
 - `shared/references/agent-runtime`: Shared runtime guidance/docs reusable across agents
+- `shared/references/branch-context`: Optional Branch Context guidance, enabled only when its canonical reference is explicitly sourced
 
 ## Codex install
 
