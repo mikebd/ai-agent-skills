@@ -24,6 +24,7 @@ working repository. If no root resolves, proceed normally without BC.
 - [File roles](#file-roles)
 - [Product insulation](#product-insulation)
 - [Reading](#reading)
+- [Instruction freshness](#instruction-freshness)
 - [Writing and lifecycle](#writing-and-lifecycle)
 - [Plan capture](#plan-capture)
 - [Methods and artifacts](#methods-and-artifacts)
@@ -159,6 +160,13 @@ If no active BC exists, search fallback lanes in this order: `__audit`,
 Inspect other files under the resolved BC path only when they are relevant to
 the task.
 
+## Instruction freshness
+
+When an agent edits an instruction document that applies to its current work,
+it must reread that document before continuing. The edited instructions take
+effect immediately in the current session; do not require a manual reload or
+session restart.
+
 ## Writing and lifecycle
 
 Write to the active lane by default. Update shared branch files only when the
@@ -180,7 +188,17 @@ historical records that intentionally describe the original move.
 Unless the resolved BC explicitly overrides this policy, capture only
 decision-complete plans created in explicit Plan Mode and approved for
 implementation. Do not capture implicit planning performed during ordinary
-agent execution.
+agent execution. This capture policy applies only when an effective individual
+BC is already in use for the work. If no current BC is in use, explicit Plan
+Mode and plan approval proceed without creating or selecting a BC just to
+store the plan.
+
+When an approved explicit plan creates a new BC, do not create a `plans/`
+directory or consume `plans/001-...` in that new BC merely to capture the
+plan. Create only the customary `CONTEXT.md` and `STATE.md`, plus any unique
+artifacts called for by the approved plan. If a different effective BC was
+already in use when the plan was approved, capture the plan in that originating
+BC as usual.
 
 Store plans inside the individual BC, never at the BC root:
 
@@ -199,6 +217,9 @@ the frozen baseline that governed the work. Do not rewrite that baseline to
 make the plan appear to have anticipated later facts, decisions, or outcomes.
 Substantive content includes the goal, decisions, scope, boundaries,
 implementation approach, and acceptance criteria.
+
+This lifecycle applies to captured `plans/` records only. It does not prescribe
+the contents or add plan-capture artifacts to a new BC created by a plan.
 
 After the baseline freezes:
 
