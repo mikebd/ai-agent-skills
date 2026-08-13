@@ -22,6 +22,7 @@ working repository. If no root resolves, proceed normally without BC.
 - [Lane model](#lane-model)
 - [Structure](#structure)
 - [File roles](#file-roles)
+- [Product insulation](#product-insulation)
 - [Reading](#reading)
 - [Writing and lifecycle](#writing-and-lifecycle)
 - [Plan capture](#plan-capture)
@@ -124,6 +125,24 @@ Prefer concise, dated, decision-first notes over diary-style logging. For
 material findings, record enough evidence to re-derive the conclusion, such as
 identifiers, time windows, exact scripts or commands, source paths, or artifact
 references. Record negative findings when they materially affect conclusions.
+
+## Product insulation
+
+BC is a one-way working layer: it may reference product artifacts, but product
+artifacts must not reference, link to, or require a BC root, lane, or plan.
+Product source, tests, CI, contracts, configuration, documentation, runbooks,
+release artifacts, and ADRs must remain understandable and usable without BC
+access. Record durable product decisions and rationale in the product
+repository itself, not only in BC.
+
+Product tools may accept caller-provided input or output paths, or equivalent
+configuration, that happen to point into BC. Treat those locations as opaque
+artifact paths: do not discover, default to, traverse, parse, link to, or
+derive product behavior from BC. Product-facing documentation may describe the
+generic path or configuration interface, but must not require or prescribe a
+BC location. Generic local worktree tooling may also create or repair a
+`.context` link as workspace plumbing, provided it does not read BC content or
+affect product behavior.
 
 ## Reading
 
