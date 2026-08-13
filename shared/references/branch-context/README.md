@@ -21,8 +21,10 @@ and the review and security risk of importing large opaque instruction sets.
 
 BC is useful for solo development, durable shared reference material,
 collaboration across developers or hosts, and multi-repository work that shares
-one branch identity. A BC link can also preserve the decision or audit result
-behind durable documentation and review discussions.
+one branch identity. BC may link to durable product documentation and preserve
+the working decision or audit trail behind it. Product artifacts do not link
+back to or depend on BC; durable product rationale remains in the product
+repository itself.
 
 ## Opt-in bootstrap
 

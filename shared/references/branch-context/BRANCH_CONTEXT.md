@@ -189,9 +189,42 @@ Store plans inside the individual BC, never at the BC root:
 ```
 
 Use a sequential, zero-padded number beginning at `001`; determine the next
-number from existing plan files and do not renumber prior plans. A follow-up or
-evaluation that belongs to the same approved plan remains with that plan unless
-the user explicitly requests a distinct plan.
+number from existing plan files and do not renumber prior plans.
+
+### Plan lifecycle and amendments
+
+A captured plan may be rewritten while it is being groomed and before its
+implementation begins. When implementation begins, its substantive content is
+the frozen baseline that governed the work. Do not rewrite that baseline to
+make the plan appear to have anticipated later facts, decisions, or outcomes.
+Substantive content includes the goal, decisions, scope, boundaries,
+implementation approach, and acceptance criteria.
+
+After the baseline freezes:
+
+- A compact current status field may change. Record implementation start,
+  completion, abandonment, and other material lifecycle transitions in dated
+  entries so the history remains reconstructable.
+- Correct typos, formatting, and broken paths or links in the frozen content
+  only when the edit does not change meaning. Append a dated maintenance note
+  identifying the repair.
+- Append a dated amendment when a stale assertion, assumption, or decision
+  needs current clarification. State what changed and why, preserve the
+  original content, and distinguish the historical implementation baseline
+  from the guidance that applies to future work.
+- An explicitly approved amendment may authorize a minor corrective follow-up
+  only when it preserves the original goal and does not change architecture,
+  public or private APIs, schemas, migrations, security boundaries,
+  authorization boundaries, or other material commitments. The amendment's
+  substantive content freezes when its implementation begins.
+- Capture any material new outcome, boundary change, or independently useful
+  follow-up as the next sequential approved plan rather than extending the
+  frozen plan.
+
+When applying this lifecycle to a plan already marked implemented, treat its
+last committed implemented form as the frozen baseline. If no such version is
+available, use the last reliably recorded form known to have governed the
+implementation. Do not reconstruct earlier history by default.
 
 ## Methods and artifacts
 
