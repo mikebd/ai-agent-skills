@@ -5,8 +5,8 @@ This directory contains the public, agent-neutral reference for Branch Context
 
 BC organizes working memory by branch and lane so long-running work does not
 collapse into an undifferentiated scratch space. It supports resumability,
-decision traceability, navigation, handoffs, and reproducible investigation,
-audit, and design reasoning.
+decision traceability, durable work decomposition, navigation, handoffs, and
+reproducible investigation, audit, and design reasoning.
 
 ## Contents
 
@@ -56,14 +56,57 @@ not import or index BC; each consumer must explicitly source BC when wanted.
 A practical BC-driven workflow is:
 
 1. Gather durable context, constraints, and evidence into BC.
-2. Synthesize and approve a plan from that context.
-3. Execute the work breakdown.
-4. Test, validate, and refine.
-5. Review and hand off with current state and decisions recorded.
+2. Create or refine a WBS when the work benefits from durable decomposition.
+3. Synthesize and approve plans for the relevant work packages.
+4. Execute, test, validate, and refine.
+5. Update delivery state and hand off with current decisions recorded.
 
 Use deliberate reasoning for planning, architecture, ambiguous cross-session
 synthesis, review, and debugging. Routine execution can use a more efficient
 default once the plan and constraints are clear.
+
+## Work breakdown structures
+
+An optional `WBS.md` provides a durable map when a BC contains multiple
+independently deliverable packages, plans, dependencies, meaningful delivery
+boundaries, parallel work, hierarchy, or repository scopes. Simple work does
+not need a WBS.
+
+Work packages use stable identifiers such as `WP-001`. They can be selected
+for individual planning without requiring a one-to-one relationship between a
+package, plan, or commit. A package may need multiple plans, and a plan may
+advance multiple tightly coupled packages. The canonical rules for package
+structure, hierarchy, dependencies, status, lineage, and lifecycle are in
+[`BRANCH_CONTEXT.md`](./BRANCH_CONTEXT.md#work-breakdown-structures).
+
+### Prompting with a WBS
+
+WBS behavior can be invoked without restating its operating procedure. A
+useful prompt usually identifies:
+
+- The action: create, plan, select, reassess, implement, update, split, or
+  transfer.
+- The scope: the current BC, one `WP-NNN`, or a set of packages.
+- Any selection or ordering rule: a named package, the next unblocked package,
+  a dependency constraint, or parallel work.
+- The expected artifact: `WBS.md`, an approved plan, lineage links, or current
+  BC state.
+
+Example prompts:
+
+- "Plan the work for this BC. If decomposition would help, capture a WBS so
+  later plans can address it."
+- "Plan `WP-003` using the current BC and WBS."
+- "Identify the next unblocked work package and produce an explicit plan for
+  it."
+- "Plan the tightly coupled work in `WP-002` and `WP-004` together."
+- "Reassess the WBS after these findings and propose any hierarchy or
+  dependency changes."
+- "Split `WP-003` into independently deliverable packages and preserve their
+  lineage."
+- "Transfer `WP-004` to the destination BC, preserving lineage without
+  requiring a destination WBS."
+- "Update the WBS and `STATE.md` after completing this plan."
 
 ## Effective specification inputs
 

@@ -2,8 +2,9 @@
 
 Branch Context (`BC`) is optional, branch-scoped persistent working context
 for coding-agent workflows. It improves resumability, decision traceability,
-cross-session continuity, navigation, handoffs, and reproducible investigation
-context without requiring every repository or developer to adopt it.
+durable work decomposition, cross-session continuity, navigation, handoffs,
+and reproducible investigation context without requiring every repository or
+developer to adopt it.
 
 ## When to use this reference
 
@@ -26,6 +27,7 @@ working repository. If no root resolves, proceed normally without BC.
 - [Reading](#reading)
 - [Instruction freshness](#instruction-freshness)
 - [Writing and lifecycle](#writing-and-lifecycle)
+- [Work breakdown structures](#work-breakdown-structures)
 - [Plan capture](#plan-capture)
 - [Methods and artifacts](#methods-and-artifacts)
 - [Links and commits](#links-and-commits)
@@ -48,9 +50,13 @@ link path.
 - `<branch-path>` is the exact output of `git branch --show-current`, including
   slashes.
 - `<lane>` is the BC lane that contains branch-scoped context.
+- `<individual-bc>` is the directory containing the BC files for one shared or
+  repository-local scope.
 - `<repo-name>` is the canonical repository identity: an explicit override, or
   otherwise the repository root basename. Never derive it from a worktree
   directory name.
+- `<work-package-id>` is a stable identifier local to one WBS, written as a
+  zero-padded `WP-NNN` value such as `WP-001`.
 
 ## Lane model
 
@@ -116,11 +122,25 @@ audit detail, and progress. The default shared-work assumption is that
 participating repositories use the same `<branch-path>`; different branch
 names are an advanced, explicitly managed case.
 
+An individual BC may also contain an optional work breakdown structure:
+
+```text
+<individual-bc>/WBS.md
+```
+
+Do not pre-create `WBS.md`; create it only under the policy in
+[Work breakdown structures](#work-breakdown-structures).
+
 ## File roles
 
 Use `CONTEXT.md` for durable framing, working agreements, stable assumptions,
 and cross-session decisions. Use `STATE.md` for current progress, findings,
 handoff notes, next steps, and active status.
+
+Use `WBS.md` for durable deliverable-oriented decomposition, package
+relationships, and package status when the work benefits from that structure.
+Use `plans/` for approved implementation baselines. Do not duplicate the full
+WBS in `STATE.md` or turn the WBS into an implementation-task checklist.
 
 Prefer concise, dated, decision-first notes over diary-style logging. For
 material findings, record enough evidence to re-derive the conclusion, such as
@@ -130,11 +150,11 @@ references. Record negative findings when they materially affect conclusions.
 ## Product insulation
 
 BC is a one-way working layer: it may reference product artifacts, but product
-artifacts must not reference, link to, or require a BC root, lane, or plan.
-Product source, tests, CI, contracts, configuration, documentation, runbooks,
-release artifacts, and ADRs must remain understandable and usable without BC
-access. Record durable product decisions and rationale in the product
-repository itself, not only in BC.
+artifacts must not reference, link to, or require a BC root, lane, WBS, work
+package, or plan. Product source, tests, CI, contracts, configuration,
+documentation, runbooks, release artifacts, and ADRs must remain understandable
+and usable without BC access. Record durable product decisions and rationale
+in the product repository itself, not only in BC.
 
 Product tools may accept caller-provided input or output paths, or equivalent
 configuration, that happen to point into BC. Treat those locations as opaque
@@ -160,6 +180,11 @@ If no active BC exists, search fallback lanes in this order: `__audit`,
 Inspect other files under the resolved BC path only when they are relevant to
 the task.
 
+When an effective individual BC contains `WBS.md`, read it after `CONTEXT.md`
+and `STATE.md` before selecting, planning, or implementing work. Read only the
+captured plans relevant to the selected work packages unless broader plan
+history is needed.
+
 ## Instruction freshness
 
 When an agent edits an instruction document that applies to its current work,
@@ -183,6 +208,101 @@ otherwise, preserve the `<branch-path>` suffix, and update self-references in
 the moved content, including script paths and examples. Do not rewrite
 historical records that intentionally describe the original move.
 
+## Work breakdown structures
+
+A BC work breakdown structure (`WBS`) is an optional, living delivery map for
+work that benefits from multiple independently planned or delivered packages,
+dependencies, delivery boundaries, or repository scopes. It is a lightweight
+software-delivery aid, not a formal project-management system.
+
+Create `WBS.md` only when the user requests it or approves an agent's
+recommendation to decompose the work. Do not require a WBS merely because work
+may span multiple files or commits; keep straightforward work in the normal
+BC files and approved plans.
+
+Keep at most one canonical `WBS.md` per individual BC. Put cross-repository
+decomposition at the shared scope and repository-specific decomposition at the
+repository-local scope. Link related packages across scopes rather than
+duplicating ownership of the same work.
+
+### Work packages
+
+Describe deliverables rather than low-level implementation tasks. Assign each
+work package the next sequential `<work-package-id>` and never renumber or
+reuse an existing identifier. Each package records:
+
+- Outcome and acceptance criteria.
+- `Parent`, or `none`.
+- `Depends on`, or `none`.
+- Status: `planned`, `in progress`, `blocked`, `complete`, `deferred`,
+  `cancelled`, or `superseded`.
+- Links to associated plans, or `none` until plans exist.
+- Scope, delivery boundary, or lineage when it is not otherwise clear.
+
+Use a flat WBS by default. Add parent-child relationships when they improve
+decomposition or rollup. Explicit `Parent` fields are authoritative. When any
+parent-child relationships exist, maintain a concise hierarchy tree as a
+secondary view and update it in the same change as the package records.
+
+Hierarchy does not imply delivery order. Record ordering constraints through
+explicit `Depends on` fields; package numbering and document order imply
+neither dependency nor priority. Packages without unmet dependencies may
+proceed in parallel. An optional sequence or delivery-wave view may summarize
+the dependency graph, but the package fields remain authoritative.
+
+Treat non-leaf packages as rollups and normally plan actionable leaf packages.
+A parent is complete only when its required children and its own acceptance
+criteria are complete.
+
+### Lifecycle and lineage
+
+Keep the WBS current as delivery proceeds. Update package status directly and
+append concise dated history for material additions, splits, transfers,
+cancellations, acceptance changes, or dependency changes. Preserve the prior
+identifiers and relationships needed to reconstruct those changes. Use
+`STATE.md` for the current focus and handoff rather than copying the WBS.
+
+Use lineage relationships for structural changes; do not use `split` or
+`transferred` as execution statuses:
+
+- A transfer moves the selected package's remaining scope to another BC. It
+  does not imply moving any other non-terminal packages. Mark the source
+  `superseded`. If the destination has or independently warrants a WBS, assign
+  the receiving package its own local identifier and add reciprocal
+  `Transferred to` and `Transferred from` links. Otherwise, link the source
+  package to the destination BC's customary `CONTEXT.md` or `STATE.md` and
+  record the source lineage there. Do not create a destination WBS solely to
+  receive a transfer.
+- A full split partitions one package into multiple successors. Mark the
+  source `superseded` and add reciprocal `Split to` and `Split from` links.
+- A partial split extracts only part of a package. Keep the source active,
+  revise its remaining outcome and acceptance criteria, record the dated scope
+  change, and link each extracted successor with reciprocal split links.
+
+Work-package identifiers are local to their WBS, so cross-BC lineage identifies
+the other BC and its local package when one exists. Ensure that transferred
+scope has only one authoritative active location.
+
+### Plans, runtime tools, and commits
+
+A work package may require multiple plans, and one plan may advance multiple
+tightly coupled packages. Link both directions when practical. Plan numbering
+remains chronological and independent of work-package identifiers. Completing
+a plan does not complete a package unless the package's acceptance criteria
+are satisfied.
+
+WBS work packages are durable BC concepts, distinct from agent runtime goals,
+tasks, checklists, and tool-managed plans. An agent may project a selected
+package into runtime tooling and derive temporary tasks from approved plans,
+but runtime state does not replace or automatically synchronize with
+`WBS.md`.
+
+Treat package and plan delivery boundaries as guidance for atomic commits, not
+as mandatory one-to-one mappings. A package may span multiple product commits,
+and a tightly coupled commit may advance multiple packages. BC may record
+product commit identifiers as delivery evidence; product commit messages must
+not depend on BC or work-package identifiers.
+
 ## Plan capture
 
 Unless the resolved BC explicitly overrides this policy, capture only
@@ -196,9 +316,9 @@ store the plan.
 When an approved explicit plan creates a new BC, do not create a `plans/`
 directory or consume `plans/001-...` in that new BC merely to capture the
 plan. Create only the customary `CONTEXT.md` and `STATE.md`, plus any unique
-artifacts called for by the approved plan. If a different effective BC was
-already in use when the plan was approved, capture the plan in that originating
-BC as usual.
+artifacts called for by the approved plan, which may include an approved
+`WBS.md`. If a different effective BC was already in use when the plan was
+approved, capture the plan in that originating BC as usual.
 
 Store plans inside the individual BC, never at the BC root:
 
@@ -209,6 +329,10 @@ Store plans inside the individual BC, never at the BC root:
 Use a sequential, zero-padded number beginning at `001`; determine the next
 number from existing plan files and do not renumber prior plans.
 
+When a WBS exists, identify the work packages advanced by each plan and link
+the plan from those package records. The relationship is many-to-many; neither
+a plan nor a package must have a one-to-one counterpart.
+
 ### Plan lifecycle and amendments
 
 A captured plan may be rewritten while it is being groomed and before its
@@ -218,8 +342,9 @@ make the plan appear to have anticipated later facts, decisions, or outcomes.
 Substantive content includes the goal, decisions, scope, boundaries,
 implementation approach, and acceptance criteria.
 
-This lifecycle applies to captured `plans/` records only. It does not prescribe
-the contents or add plan-capture artifacts to a new BC created by a plan.
+This lifecycle applies to captured `plans/` records only. It does not freeze a
+living WBS, prescribe the contents of a new BC, or add plan-capture artifacts
+to a new BC created by a plan.
 
 After the baseline freezes:
 
