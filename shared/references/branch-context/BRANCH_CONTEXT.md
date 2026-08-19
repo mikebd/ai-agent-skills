@@ -307,11 +307,19 @@ not depend on BC or work-package identifiers.
 
 Unless the resolved BC explicitly overrides this policy, capture only
 decision-complete plans created in explicit Plan Mode and approved for
-implementation. Do not capture implicit planning performed during ordinary
-agent execution. This capture policy applies only when an effective individual
-BC is already in use for the work. If no current BC is in use, explicit Plan
-Mode and plan approval proceed without creating or selecting a BC just to
-store the plan.
+implementation. Capture an approved plan automatically on the first
+subsequent turn that permits writes, before implementation or other changes;
+do not wait for a separate capture request. Do not capture implicit planning
+performed during ordinary agent execution. This capture policy applies only
+when an effective individual BC is already in use for the work. If no current
+BC is in use, explicit Plan Mode and plan approval proceed without creating or
+selecting a BC just to store the plan.
+
+The lane does not affect capture eligibility. When the effective individual BC
+is in `_done`, capture an approved review or follow-up plan there rather than
+moving the BC back to `_active` solely to store the plan. This preserves a
+stable done-lane path for links from the related pull request and other
+references.
 
 When an approved explicit plan creates a new BC, do not create a `plans/`
 directory or consume `plans/001-...` in that new BC merely to capture the
