@@ -60,6 +60,10 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
   - git branch -d / -m
   - git worktree add / remove
   (instead of attempting sandboxed execution first).
+- In a linked worktree, ref-writing operations can update shared Git metadata
+  under `git rev-parse --git-common-dir` (for example, `packed-refs`), not only
+  the worktree-specific Git directory. Do not expand sandbox write access for
+  these operations; request elevation for the specific Git command.
 
 ### Git Lock Safety
 - Never run git index-writing commands in parallel (`git add`, `git commit`, `git merge`, `git rebase`, `git checkout`, `git stash`, etc.); execute them serially.
