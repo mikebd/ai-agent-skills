@@ -182,8 +182,8 @@ the task.
 
 When an effective individual BC contains `WBS.md`, read it after `CONTEXT.md`
 and `STATE.md` before selecting, planning, or implementing work. Read only the
-captured plans relevant to the selected work packages unless broader plan
-history is needed.
+captured plans relevant to the selected work packages or directly relevant
+unassociated work unless broader plan history is needed.
 
 ## Instruction freshness
 
@@ -214,6 +214,12 @@ A BC work breakdown structure (`WBS`) is an optional, living delivery map for
 work that benefits from multiple independently planned or delivered packages,
 dependencies, delivery boundaries, or repository scopes. It is a lightweight
 software-delivery aid, not a formal project-management system.
+
+Use a WBS principally for up-front planning of a BC's implementation. It is
+not a ledger that must represent every later plan, refactor, polish item, or
+unexpected change. A later explicit plan may remain unassociated with any
+work package when recording it in the WBS would add no durable delivery or
+dependency clarity.
 
 Create `WBS.md` only when the user requests it or approves an agent's
 recommendation to decompose the work. Do not require a WBS merely because work
@@ -337,9 +343,13 @@ Store plans inside the individual BC, never at the BC root:
 Use a sequential, zero-padded number beginning at `001`; determine the next
 number from existing plan files and do not renumber prior plans.
 
-When a WBS exists, identify the work packages advanced by each plan and link
-the plan from those package records. The relationship is many-to-many; neither
-a plan nor a package must have a one-to-one counterpart.
+When a WBS exists, link a plan to each existing work package it materially
+advances. Do not create a work package solely to capture or attach a plan,
+including after that plan has completed. Create a new package only when it
+improves the durable WBS structure, such as by clarifying future delivery or
+dependencies that follow from the completed plan. The relationship is
+many-to-many; a plan may remain unassociated, and neither a plan nor a package
+must have a one-to-one counterpart.
 
 ### Plan lifecycle and amendments
 
