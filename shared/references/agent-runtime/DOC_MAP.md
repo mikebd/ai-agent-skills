@@ -4,6 +4,7 @@ Purpose: single source of truth for what each RMAR document governs.
 
 ## Ownership
 - [`ACRONYMS.md`](./ACRONYMS.md): stable shorthand for prompting against RMAR and related agent docs.
+- [`AI_AGENT_LAUNCHER.md`](./AI_AGENT_LAUNCHER.md): AI coding-agent launcher source resolution, command selection, and diagnostics for launcher, session, and worktree tasks.
 - [`CODE_QUALITY.md`](./CODE_QUALITY.md): implementation planning quality defaults, TDD/red-green workflow, behavior-locking tests, and practical test-scope decisions.
 - [`DATA_ANALYSIS.md`](./DATA_ANALYSIS.md): ad-hoc offline EDA, statistics, and visualization workflows.
 - [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md): startup/runtime behavior contract used by agent config pointers.

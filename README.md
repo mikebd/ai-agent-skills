@@ -2,6 +2,16 @@
 
 Agentic workflow utilities and skills.
 
+## Companion repositories
+
+These optional repositories complement this guidance; `ai-agent-skills` does
+not require either checkout.
+
+- [`mikebd/bash-scripts`](https://github.com/mikebd/bash-scripts): shell-first
+  utilities for direct local workflows.
+- [`mikebd/py-scripts`](https://github.com/mikebd/py-scripts): maintained
+  Python CLIs, including [`ai-agent-launcher`](https://github.com/mikebd/py-scripts/blob/main/docs/ai-agent-launcher.md).
+
 ## Layout
 
 - `codex/skills`: Source-of-truth Codex skills (folders with SKILL.md)
