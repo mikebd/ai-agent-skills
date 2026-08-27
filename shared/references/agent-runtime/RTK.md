@@ -52,6 +52,10 @@ which rtk             # Verify correct binary
 
 - Prefer native `rtk` subcommands first for routine operations.
 - For text search, default to `rtk grep` (not `rtk proxy rg`) unless `rtk grep` cannot express the needed search behavior.
+- Do not pass ripgrep-only `--glob` filters to `rtk grep`. In the supported
+  RTK environment, they are delegated to GNU grep and fail whether or not
+  they follow `--`. When a search needs `--glob`, use a narrow raw `rg`
+  command directly; do not first try the failing `rtk grep` form.
 - For git operations, prefer `rtk git ...` where supported.
 - For Go test/build/vet operations, prefer `rtk go test`, `rtk go build`, and `rtk go vet` where supported.
 - If native `rtk` is not suitable or not beneficial, run the raw command directly only after checking whether RTK has a suitable native subcommand.
@@ -61,6 +65,7 @@ which rtk             # Verify correct binary
 
 Raw commands are allowed when:
 - RTK lacks the needed feature or flags
+- a text search needs ripgrep `--glob` filtering
 - exact raw output is required for correctness, parsing, or review
 - true streaming or TTY behavior is required
 - RTK output compaction would hide diagnostics that matter for the task
@@ -79,10 +84,10 @@ When using a raw command under one of these exceptions:
 Examples:
 
 ```bash
-# Preferred
-rtk grep -n "int32\\(" ./path/to/package -- --glob "*test.go"
+# Preferred ordinary text search
+rtk grep -n "int32\\(" ./path/to/package
 
-# Also acceptable when rtk adds no value
+# Known glob-filtering exception
 rg -n "int32\\(" ./path/to/package --glob "*test.go"
 
 # Debug/edge-case fallback only
