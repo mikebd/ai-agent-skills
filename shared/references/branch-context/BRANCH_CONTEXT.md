@@ -174,11 +174,15 @@ When reading shared multi-repository BC:
 3. Read repository-local `CONTEXT.md` and `STATE.md` for `<repo-name>` when
    present.
 
-If no active BC exists, search fallback lanes in this order: `__audit`,
+Resolve every candidate at the current `<branch-path>`. If no active BC exists
+at that path, search fallback lanes at the same path in this order: `__audit`,
 `__review`, `_todo`, `_hold`, `_deferred`, `_research`, `_idea`, `_done`, and
-`_rejected`. Within a lane, prefer shared files, then repository-local files.
-Inspect other files under the resolved BC path only when they are relevant to
-the task.
+`_rejected`. Within a lane, preserve the applicable repository scope and
+prefer shared files, then repository-local files. Do not select a BC because
+its branch name is similar, its topic, WBS, or history appears relevant, or it
+happens to be in a fallback lane. A different branch path may be selected only
+through an explicit user, runtime, or bootstrap override. Inspect other files
+under the resolved BC path only when they are relevant to the task.
 
 When an effective individual BC contains `WBS.md`, read it after `CONTEXT.md`
 and `STATE.md` before selecting, planning, or implementing work. Read only the
@@ -320,6 +324,13 @@ performed during ordinary agent execution. This capture policy applies only
 when an effective individual BC is already in use for the work. If no current
 BC is in use, explicit Plan Mode and plan approval proceed without creating or
 selecting a BC just to store the plan.
+
+For this purpose, an effective individual BC is the one selected for the
+current task during normal BC resolution before explicit Plan Mode. It must be
+at the current `<branch-path>` unless an explicit user, runtime, or bootstrap
+override selected another branch path. Reading a historical or fallback record
+does not by itself make it an effective capture target; do not search for or
+select a BC after plan approval merely to store the plan.
 
 The lane does not affect capture eligibility. When the effective individual BC
 is in `_done`, capture an approved review or follow-up plan there rather than
