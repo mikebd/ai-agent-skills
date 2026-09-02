@@ -22,6 +22,22 @@ not require either checkout.
 - `shared/references/agent-runtime`: Shared runtime guidance/docs reusable across agents
 - `shared/references/branch-context`: Optional Branch Context guidance, enabled only when its canonical reference is explicitly sourced
 
+## Branch Context
+
+Branch Context is an optional, agent-neutral practice for keeping useful
+working memory with a branch. It can make work easier to resume, explain, hand
+off, and review by preserving the reasoning around a change alongside its
+current state.
+
+Depending on the work, a BC may contain durable framing and decisions, current
+findings and evidence, optional work decomposition and plans, reusable methods
+or artifacts, and lifecycle history. These materials complement a pull
+request; they do not replace the product code, tests, or independent review.
+
+- Read the [Branch Context adoption guide](shared/references/branch-context/README.md).
+- See the [canonical behavior reference](shared/references/branch-context/BRANCH_CONTEXT.md).
+- Browse the [public BC catalog](https://github.com/mikebd/public-branch-context/blob/main/README.md).
+
 ## Codex install
 
 Run:

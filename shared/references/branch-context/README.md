@@ -8,6 +8,11 @@ collapse into an undifferentiated scratch space. It supports resumability,
 decision traceability, durable work decomposition, navigation, handoffs, and
 reproducible investigation, audit, and design reasoning.
 
+For a curated set of public examples, see the [public Branch Context
+catalog](https://github.com/mikebd/public-branch-context/blob/main/README.md).
+This README is the adoption guide; the catalog is the companion entrypoint for
+browsing public BC branches and representative contexts.
+
 ## Contents
 
 - [`BRANCH_CONTEXT.md`](./BRANCH_CONTEXT.md): canonical agent behavior,
