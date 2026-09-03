@@ -55,6 +55,40 @@ See [`settings.json.example`](./settings.json.example) for a ready-to-merge
 starting point covering these plus the git operations listed under "Git
 Permissions".
 
+### Under the RTK hook, rules match the rewritten command
+
+This is the interaction most likely to waste an afternoon, because it fails as
+silently as everything else in this document: rules that look right simply never
+fire.
+
+`rtk hook claude` returns the rewritten command as `updatedInput`, and Claude
+Code evaluates `PreToolUse` hooks *before* the permission decision. So the
+string your rules are matched against is the rewritten one, not what the agent
+asked for. The hook returns no `permissionDecision`, so it approves nothing on
+its own — it just changes what the allowlist sees.
+
+```text
+git status            -> rtk git status        Bash(git status:*) never fires
+npm run start         -> rtk npm run start
+npx playwright test   -> rtk playwright test   note: npx is dropped
+npx cypress run       -> rtk npx cypress run   note: npx is kept
+git merge, git rebase, npm test, ng test       not rewritten
+```
+
+`settings.json.example` therefore lists both forms — raw rules for machines
+without the hook, `rtk `-prefixed rules for machines with it. Keeping both means
+the file behaves the same before and after `rtk-install.sh`, and survives an
+uninstall.
+
+Check any command before writing a rule for it:
+
+```bash
+rtk hook check 'npx playwright test'    # -> rtk playwright test
+```
+
+The rewrite table above is rtk 0.45.0. Re-check after an rtk upgrade rather than
+assuming; a changed rewrite turns a working rule into a dead one with no error.
+
 ### Package operations are a separate, deliberate opt-in
 
 The remaining prefixes in `DEVELOPER_INSTRUCTIONS.md` reach a package index and
@@ -96,11 +130,16 @@ above into `permissions.allow` yourself:
   "permissions": {
     "allow": [
       "Bash(npm ci:*)",
-      "Bash(uv sync:*)"
+      "Bash(uv sync:*)",
+      "Bash(rtk uv sync:*)"
     ]
   }
 }
 ```
+
+`npm ci` is not rewritten, so it needs one rule; `uv sync` is, so it needs both.
+Of this group the hook rewrites `uv sync`, `uv pip install`, `pip install` and
+`poetry install`, and leaves `npm install`, `npm ci` and `uv lock` alone.
 
 Prefer the lockfile-respecting commands (`npm ci`, `uv sync`, `poetry install`)
 over the ones that resolve whatever they are handed (`npm install`,
@@ -111,14 +150,18 @@ published this morning — but the pinned code's install hooks and build backend
 still execute, with the agent's permissions. Pinning narrows the set of code
 that can run; it does not stop it running.
 
-`git commit` and `git push` are deliberately absent from that allowlist. Under
-"Commit/Push Controls" in `DEVELOPER_INSTRUCTIONS.md`, `git commit` must hold
-for explicit manual-review approval and `git push` must be user-requested. In
-Claude Code the permission prompt *is* that hold, so allowlisting either
-command would remove the control the rule exists to enforce.
+`git commit` and `git push` are deliberately absent from that allowlist, in
+both forms. Under "Commit/Push Controls" in `DEVELOPER_INSTRUCTIONS.md`,
+`git commit` must hold for explicit manual-review approval and `git push` must
+be user-requested. In Claude Code the permission prompt *is* that hold, so
+allowlisting either command would remove the control the rule exists to enforce.
 
 Keep each rule as narrow as the workflow allows. Do not widen a rule to a bare
-executable (for example `Bash(npm:*)`) to avoid a second prompt.
+executable (for example `Bash(npm:*)`) to avoid a second prompt. Under the hook
+this matters more than it looks: `*` spans spaces, so a single
+`Bash(rtk git *)` rule covers `rtk git commit` and `rtk git push` and quietly
+removes the hold — the reason the git rules above are written per-subcommand
+rather than as one `git` rule.
 
 ## Permission modes
 
@@ -260,6 +303,9 @@ What this means during a session:
   fallback in `RTK.md` still behaves as documented.
 - `rtk hook check '<command>'` shows how any command would be rewritten,
   without running it.
+- The rewrite happens before permission rules are evaluated, so allowlist
+  entries must match the rewritten command. See
+  [Under the RTK hook, rules match the rewritten command](#under-the-rtk-hook-rules-match-the-rewritten-command).
 
 ## Notes
 

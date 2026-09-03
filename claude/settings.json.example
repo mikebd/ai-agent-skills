@@ -18,7 +18,22 @@
       "Bash(ng test:*)",
       "Bash(npx ng serve:*)",
       "Bash(npx playwright test:*)",
-      "Bash(npx cypress run:*)"
+      "Bash(npx cypress run:*)",
+
+      "Bash(rtk git add:*)",
+      "Bash(rtk git fetch:*)",
+      "Bash(rtk git pull:*)",
+      "Bash(rtk git branch -d:*)",
+      "Bash(rtk git branch -m:*)",
+      "Bash(rtk git worktree add:*)",
+      "Bash(rtk git worktree remove:*)",
+      "Bash(rtk git status:*)",
+      "Bash(rtk git diff:*)",
+      "Bash(rtk git log:*)",
+      "Bash(rtk npm run start:*)",
+      "Bash(rtk npx ng serve:*)",
+      "Bash(rtk playwright test:*)",
+      "Bash(rtk npx cypress run:*)"
     ]
   }
 }

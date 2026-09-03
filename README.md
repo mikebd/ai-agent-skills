@@ -20,7 +20,7 @@ not require either checkout.
 - `claude/skills`: Claude-specific skill/prompt formats
 - `claude/EXECUTION_MODEL.md`: Claude Code mapping for the agent-neutral runtime contract
 - `claude/CLAUDE.md.example`: Copyable `~/.claude/CLAUDE.md` bootstrap
-- `claude/settings.json.example`: Optional permission allowlist matching the runtime contract, minus package installs
+- `claude/settings.json.example`: Optional permission allowlist matching the runtime contract, minus package installs. Lists each rule in raw and `rtk `-prefixed form, since the RTK hook rewrites commands before permission matching
 - `claude/scripts/rtk-install.sh`: Installs the RTK hook for Claude Code, pinned to rtk's absolute path
 - `claude/scripts/rtk-guard.sh`: Checks that the RTK hook is registered and pinned, and reports duplicate RTK.md guidance
 - `claude/scripts/rtk-hook-probe.py`: Helper for `rtk-guard.sh`; reports whether `settings.json` registers the hook, and whether it is pinned
