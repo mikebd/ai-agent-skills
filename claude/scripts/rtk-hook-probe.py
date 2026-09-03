@@ -3,8 +3,8 @@
 
 Prints exactly one word on stdout:
 
-  missing   no usable `rtk hook claude` PreToolUse registration
-  bare      registered, but invoked by bare name `rtk` (PATH-fragile)
+  missing   no usable `rtk hook claude` PreToolUse registration for Bash
+  bare      registered, but not by absolute path (PATH- or cwd-dependent)
   pinned    registered with an absolute path to rtk
 
 A settings file that is absent or unparseable reports `missing`: the hook
@@ -12,12 +12,31 @@ cannot be running if Claude Code cannot read the file that registers it.
 """
 
 import json
+import os
+import re
 import shlex
 import sys
 
 
+def matches_bash(matcher):
+    """Whether a PreToolUse entry's matcher selects the Bash tool.
+
+    An absent, empty, or `*` matcher selects every tool. Otherwise Claude Code
+    treats the matcher as a regular expression against the tool name, so
+    `Bash|Edit` counts and `Edit` does not.
+    """
+    if matcher is None or matcher in ("", "*"):
+        return True
+    if not isinstance(matcher, str):
+        return False
+    try:
+        return re.fullmatch(matcher, "Bash") is not None
+    except re.error:
+        return matcher == "Bash"
+
+
 def hook_commands(settings):
-    """Yield the command string of every PreToolUse command hook."""
+    """Yield the command of every PreToolUse command hook that covers Bash."""
     hooks = settings.get("hooks")
     if not isinstance(hooks, dict):
         return
@@ -26,6 +45,10 @@ def hook_commands(settings):
         return
     for entry in entries:
         if not isinstance(entry, dict):
+            continue
+        # A hook registered under a non-Bash matcher never sees a shell
+        # command, so it is not evidence that anything gets rewritten.
+        if not matches_bash(entry.get("matcher")):
             continue
         for hook in entry.get("hooks", []) or []:
             if not isinstance(hook, dict):
@@ -46,11 +69,13 @@ def classify(command):
     if len(argv) < 3 or argv[1:3] != ["hook", "claude"]:
         return None
     program = argv[0]
-    if program == "rtk":
-        return "bare"
-    if program.rsplit("/", 1)[-1] == "rtk":
-        return "pinned"
-    return None
+    if os.path.basename(program) != "rtk":
+        return None
+    # Only an absolute path is independent of both PATH and the working
+    # directory of whatever process spawns the hook. `./rtk` and `bin/rtk`
+    # resolve against a cwd this script cannot predict, so they are as fragile
+    # as the bare name.
+    return "pinned" if os.path.isabs(program) else "bare"
 
 
 def main():

@@ -49,14 +49,13 @@ ng test             -> Bash(ng test:*)
 npx ng serve        -> Bash(npx ng serve:*)
 npx playwright test -> Bash(npx playwright test:*)
 npx cypress run     -> Bash(npx cypress run:*)
-uv lock             -> Bash(uv lock:*)
 ```
 
 See [`settings.json.example`](./settings.json.example) for a ready-to-merge
 starting point covering these plus the git operations listed under "Git
 Permissions".
 
-### Package installs are a separate, deliberate opt-in
+### Package operations are a separate, deliberate opt-in
 
 The remaining prefixes in `DEVELOPER_INSTRUCTIONS.md` reach a package index and
 run code that neither you nor the agent wrote:
@@ -65,6 +64,7 @@ run code that neither you nor the agent wrote:
 npm install         -> Bash(npm install:*)
 npm ci              -> Bash(npm ci:*)
 uv sync             -> Bash(uv sync:*)
+uv lock             -> Bash(uv lock:*)
 uv pip install      -> Bash(uv pip install:*)
 pip install         -> Bash(pip install:*)
 poetry install      -> Bash(poetry install:*)
@@ -76,6 +76,12 @@ These are **not** in `settings.json.example`, and that omission is deliberate.
 Allowlisted, any of them turns a prompt-injected repository into arbitrary code
 execution with the agent's permissions, and the approval prompt is the only
 thing standing in the way.
+
+`uv lock` belongs here too, despite installing nothing. Resolution needs each
+candidate's metadata, and a dependency published without a wheel or static
+metadata forces uv to build its source distribution to read it — which runs
+that package's PEP 517 build backend. The trigger is uncommon, not absent, and
+it is the same class of execution as the rest of this list.
 
 `DEVELOPER_INSTRUCTIONS.md` names these as the correct prefixes to scope *when
 you pre-authorize them* — it does not require pre-authorizing them at all. The
@@ -98,8 +104,12 @@ above into `permissions.allow` yourself:
 
 Prefer the lockfile-respecting commands (`npm ci`, `uv sync`, `poetry install`)
 over the ones that resolve whatever they are handed (`npm install`,
-`pip install`, `uv pip install`); they still execute package code, but only the
-code your lockfile already pins.
+`pip install`, `uv pip install`). Understand what that buys, though: a lockfile
+is a reproducibility control, not a security boundary. It fixes *which*
+versions you get, so you are not exposed to whatever a transitive dependency
+published this morning — but the pinned code's install hooks and build backends
+still execute, with the agent's permissions. Pinning narrows the set of code
+that can run; it does not stop it running.
 
 `git commit` and `git push` are deliberately absent from that allowlist. Under
 "Commit/Push Controls" in `DEVELOPER_INSTRUCTIONS.md`, `git commit` must hold
@@ -156,12 +166,17 @@ command -v rtk                         # 2. note the absolute path it prints
 Either way, verify with [`scripts/rtk-guard.sh`](./scripts/rtk-guard.sh), which
 exits non-zero until the hook is installed, pinned, and free of duplicate RTK.md
 guidance. It counts the hook as installed only when `settings.json` carries a
-real `hooks.PreToolUse` registration of `rtk hook claude` — rtk writes no hook
-script of its own, so nothing else is evidence that Claude Code will invoke it.
-The structural check runs through
-[`scripts/rtk-hook-probe.py`](./scripts/rtk-hook-probe.py); without Python 3 the
-guard falls back to a line-oriented grep that cannot confirm the command sits
-under `PreToolUse`.
+real `hooks.PreToolUse` registration of `rtk hook claude` under a matcher that
+selects `Bash` — rtk writes no hook script of its own, so nothing else is
+evidence that Claude Code will invoke it, and a hook registered for another tool
+or event never sees a shell command. "Pinned" likewise means an absolute path:
+`./rtk` and `bin/rtk` resolve against a working directory the hook cannot
+predict, so they are as fragile as the bare name.
+
+Establishing either fact means parsing `settings.json`, which
+[`scripts/rtk-hook-probe.py`](./scripts/rtk-hook-probe.py) does. Without
+Python 3 the guard reports that it cannot verify and exits non-zero, rather than
+inferring a pass from matching lines.
 
 Use `--hook-only` deliberately. Plain `rtk init -g` additionally writes
 `<agent-home>/RTK.md` and adds an `@RTK.md` import to `<agent-home>/CLAUDE.md`,

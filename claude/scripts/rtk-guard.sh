@@ -23,33 +23,32 @@ settings="${config_dir}/settings.json"
 rtk_md="${config_dir}/RTK.md"
 claude_md="${config_dir}/CLAUDE.md"
 
-# Only a real `hooks.PreToolUse` registration of `rtk hook claude` counts as
-# installed. rtk writes no hook script of its own, so settings.json is the sole
-# source of truth, and matching stray `rtk` text anywhere in it would report a
-# hook that Claude Code will never invoke.
+# Only a real `hooks.PreToolUse` registration of `rtk hook claude`, under a
+# matcher that selects Bash, counts as installed. rtk writes no hook script of
+# its own, so settings.json is the sole source of truth; matching stray `rtk`
+# text, or a hook registered for some other tool or event, would report a hook
+# that never sees a shell command.
 #
-# The hook is also PATH-fragile when it invokes rtk by bare name: a
+# The hook is also fragile unless the command is an absolute path: a
 # GUI-launched Claude Code (macOS app, IDE) often does not inherit the
-# shell-profile PATH that makes `rtk` resolvable, and the hook then fails
+# shell-profile PATH that makes `rtk` resolvable, and a relative path resolves
+# against an unpredictable working directory. Either way the hook fails
 # silently -- no error, no rewrites.
-hook_state=missing
+#
+# Establishing both facts means understanding the structure of settings.json,
+# which grep cannot do. Without python3 this check fails closed rather than
+# guessing from matching lines.
+hook_state=unverified
 if command -v python3 >/dev/null 2>&1 && [ -f "${probe}" ]; then
   hook_state="$(python3 "${probe}" "${settings}" 2>/dev/null || echo missing)"
-elif [ -f "${settings}" ] && grep -q '"PreToolUse"' "${settings}" 2>/dev/null; then
-  # Fallback without python3: line-oriented and unable to confirm that the
-  # command sits under PreToolUse, so it can over-report on a settings file
-  # that registers rtk under some other event.
-  if grep -qE '"command"[[:space:]]*:[[:space:]]*"rtk[[:space:]]+hook[[:space:]]+claude"' "${settings}" 2>/dev/null; then
-    hook_state=bare
-  elif grep -qE '"command"[[:space:]]*:[[:space:]]*"[^"]*/rtk[[:space:]]+hook[[:space:]]+claude"' "${settings}" 2>/dev/null; then
-    hook_state=pinned
-  fi
 fi
 
 hook_installed=false
 path_fragile=false
-[ "${hook_state}" != missing ] && hook_installed=true
-[ "${hook_state}" = bare ] && path_fragile=true
+case "${hook_state}" in
+  pinned) hook_installed=true ;;
+  bare) hook_installed=true; path_fragile=true ;;
+esac
 
 duplicate=false
 [ -f "${rtk_md}" ] && duplicate=true
@@ -57,16 +56,25 @@ if [ -f "${claude_md}" ] && grep -qE '^[[:space:]]*@.*RTK\.md[[:space:]]*$' "${c
   duplicate=true
 fi
 
-if [ "${hook_installed}" = true ]; then
-  echo "hook:      installed (${config_dir})"
-else
-  echo "hook:      not installed"
-  echo "           install: rtk init -g --hook-only --auto-patch"
-fi
+case "${hook_state}" in
+  pinned|bare)
+    echo "hook:      installed (${config_dir})"
+    ;;
+  unverified)
+    echo "hook:      cannot verify -- python3 not found"
+    echo "           Confirming a PreToolUse registration under a Bash matcher"
+    echo "           means parsing settings.json, which grep cannot do. This"
+    echo "           check fails closed rather than report an unverified pass."
+    ;;
+  *)
+    echo "hook:      not installed"
+    echo "           install: rtk init -g --hook-only --auto-patch"
+    ;;
+esac
 
 if [ "${path_fragile}" = true ]; then
   rtk_abs="$(command -v rtk 2>/dev/null || true)"
-  echo "PATH:      hook invokes bare 'rtk' (fails silently off-PATH)"
+  echo "PATH:      hook command is not an absolute path (fails silently)"
   if [ -n "${rtk_abs}" ]; then
     echo "           pin it: set \"command\": \"${rtk_abs} hook claude\""
   else
@@ -80,8 +88,9 @@ fi
 if [ "${duplicate}" = false ]; then
   echo "RTK.md:    no duplicate artifacts"
   # A clean machine must not pass the setup check without RTK enforcement, so
-  # a missing or PATH-fragile hook fails even with nothing to de-duplicate.
-  [ "${hook_installed}" = true ] && [ "${path_fragile}" = false ] && exit 0
+  # anything short of a verified, pinned hook fails even with nothing to
+  # de-duplicate.
+  [ "${hook_state}" = pinned ] && exit 0
   exit 1
 fi
 

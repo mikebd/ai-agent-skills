@@ -18,8 +18,7 @@
       "Bash(ng test:*)",
       "Bash(npx ng serve:*)",
       "Bash(npx playwright test:*)",
-      "Bash(npx cypress run:*)",
-      "Bash(uv lock:*)"
+      "Bash(npx cypress run:*)"
     ]
   }
 }
