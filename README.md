@@ -60,16 +60,27 @@ the neutral execution terms onto that agent's real permission mechanics.
 See the [agent runtime README](shared/references/agent-runtime/README.md) for
 step-by-step setup for each.
 
-RTK integration is asymmetric and each overlay documents its side: `rtk init`
-installs a command-rewriting hook for Claude Code, while `rtk init --codex`
-writes documentation only. Claude Code users should run
-[`claude/scripts/rtk-install.sh`](claude/scripts/rtk-install.sh) once. It installs
+**RTK is optional.** It is a CLI proxy that trims tokens from command output;
+the runtime contract, the execution-model overlays and Branch Context all work
+without it, and nothing here requires you to adopt it. Skip this paragraph if
+you are not using it — `rtk-guard.sh` passes on a machine with no rtk and no
+hook, rather than telling you to install something.
+
+If you do want it, integration is asymmetric and each overlay documents its
+side: `rtk init` installs a command-rewriting hook for Claude Code, while
+`rtk init --codex` writes documentation only. Claude Code users run
+[`claude/scripts/rtk-install.sh`](claude/scripts/rtk-install.sh) once (rtk itself
+comes from `brew install rtk`, or see <https://www.rtk-ai.app/>). It installs
 the hook without RTK's upstream RTK.md, which would otherwise duplicate
 [`RTK.md`](shared/references/agent-runtime/RTK.md) in every session, and pins the
 hook to rtk's absolute path so it keeps working on GUI-launched surfaces, where a
 bare `rtk` fails silently. [`claude/scripts/rtk-guard.sh`](claude/scripts/rtk-guard.sh)
-verifies both. Codex users rely on
-the selection rules in that same document.
+verifies both. Codex users rely on the selection rules in that same document.
+
+One consequence to know before writing permission rules: the hook rewrites
+commands *before* Claude Code evaluates `permissions.allow`, so rules must match
+the rewritten command. See
+[Under the RTK hook, rules match the rewritten command](claude/EXECUTION_MODEL.md#under-the-rtk-hook-rules-match-the-rewritten-command).
 
 ## Claude Code install
 
@@ -79,10 +90,14 @@ the selection rules in that same document.
    `/ABS/PATH/TO/ai-agent-skills` with your clone path.
 3. Optionally merge [`claude/settings.json.example`](claude/settings.json.example)
    into `~/.claude/settings.json`. It deliberately omits package-install
-   commands; see [Package installs are a separate, deliberate opt-in](claude/EXECUTION_MODEL.md#package-installs-are-a-separate-deliberate-opt-in).
+   commands; see [Package operations are a separate, deliberate opt-in](claude/EXECUTION_MODEL.md#package-operations-are-a-separate-deliberate-opt-in).
+4. Optionally adopt RTK: install it with `brew install rtk` or from
+   <https://www.rtk-ai.app/>, then run `./claude/scripts/rtk-install.sh`. Verify
+   with `./claude/scripts/rtk-guard.sh`. Skipping this is a supported
+   configuration, not a half-finished setup.
 
-Keep only the reference lines you want: runtime guidance and Branch Context are
-independent opt-ins.
+Keep only the reference lines you want: runtime guidance, the permission
+allowlist, RTK and Branch Context are independent opt-ins.
 
 ## Codex install
 

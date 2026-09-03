@@ -4,3 +4,6 @@
 ## Worktrees may link `.context` as a symlink; `.context/` only matches dirs.
 .context
 .context/
+
+# Python
+__pycache__/

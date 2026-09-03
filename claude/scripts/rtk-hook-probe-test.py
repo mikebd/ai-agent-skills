@@ -153,6 +153,43 @@ class EndToEnd(unittest.TestCase):
                          '{"hooks": null}', '{"hooks": {"PreToolUse": {}}}'):
             self.assertEqual(self.run_probe(settings), "missing", settings)
 
+    def program(self, settings):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "settings.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(settings, handle)
+            result = subprocess.run(
+                [sys.executable, os.path.join(os.path.dirname(
+                    os.path.abspath(__file__)), "rtk-hook-probe.py"),
+                 "--program", path],
+                capture_output=True, text=True, check=True)
+            return result.stdout.strip()
+
+    def test_program_reports_the_selected_path(self):
+        # The caller checks this path still exists; a pin to a path that has
+        # gone away fails as silently as never pinning.
+        self.assertEqual(
+            self.program(registration("/opt/homebrew/bin/rtk hook claude")),
+            "/opt/homebrew/bin/rtk")
+        self.assertEqual(self.program(registration("rtk hook claude")), "rtk")
+
+    def test_program_is_empty_when_no_hook(self):
+        self.assertEqual(self.program({"env": {"NOTE": "x"}}), "")
+        self.assertEqual(
+            self.program(registration("/usr/bin/rtk hook claude",
+                                      matcher="Edit")), "")
+
+    def test_program_agrees_with_the_state_it_reported(self):
+        # Both modes must select the same registration, or the guard would
+        # check the existence of a path it did not classify.
+        settings = {"hooks": {"PreToolUse": [
+            {"matcher": "Bash", "hooks": [
+                {"type": "command", "command": "/usr/bin/rtk hook claude"}]},
+            {"matcher": "Bash", "hooks": [
+                {"type": "command", "command": "rtk hook claude"}]}]}}
+        self.assertEqual(self.run_probe(settings), "bare")
+        self.assertEqual(self.program(settings), "rtk")
+
     def test_absent_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = subprocess.run(

@@ -37,7 +37,11 @@ config_dir="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}"
 settings="${config_dir}/settings.json"
 
 if ! command -v rtk >/dev/null 2>&1; then
-  echo "rtk not found on PATH. Install it first: https://github.com/rtk-ai/rtk" >&2
+  echo "rtk not found on PATH. RTK is an optional layer -- the runtime contract" >&2
+  echo "and Branch Context work without it. To adopt it:" >&2
+  echo >&2
+  echo "  brew install rtk        (homebrew-core; macOS and Linux)" >&2
+  echo "  https://www.rtk-ai.app/ (other platforms)" >&2
   exit 1
 fi
 rtk_abs="$(command -v rtk)"

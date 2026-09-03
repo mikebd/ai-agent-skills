@@ -9,6 +9,11 @@ Prints exactly one word on stdout:
 
 A settings file that is absent or unparseable reports `missing`: the hook
 cannot be running if Claude Code cannot read the file that registers it.
+
+With --program, prints the program path of the registration it selected
+instead, or nothing when there is none. The caller uses this to check that a
+pinned path still exists -- pinning to a path that has gone away fails as
+silently as never pinning at all.
 """
 
 import json
@@ -97,29 +102,51 @@ def classify(command):
     return "pinned" if os.path.isabs(program) else "bare"
 
 
+def program_of(command):
+    """The program path of a command classify() accepts, else None."""
+    if classify(command) is None:
+        return None
+    return shlex.split(command)[0]
+
+
 def main():
-    if len(sys.argv) != 2:
-        print("usage: rtk-hook-probe.py <settings.json>", file=sys.stderr)
+    argv = sys.argv[1:]
+    want_program = False
+    if argv and argv[0] == "--program":
+        want_program = True
+        argv = argv[1:]
+    if len(argv) != 1:
+        print("usage: rtk-hook-probe.py [--program] <settings.json>",
+              file=sys.stderr)
         return 2
     try:
-        with open(sys.argv[1], encoding="utf-8") as handle:
+        with open(argv[0], encoding="utf-8") as handle:
             settings = json.load(handle)
     except (OSError, ValueError):
-        print("missing")
+        if not want_program:
+            print("missing")
         return 0
     if not isinstance(settings, dict):
-        print("missing")
+        if not want_program:
+            print("missing")
         return 0
 
-    results = [c for c in (classify(x) for x in hook_commands(settings)) if c]
+    commands = list(hook_commands(settings))
+    results = [(classify(c), c) for c in commands]
+    results = [(state, c) for state, c in results if state]
+
     # A bare registration anywhere is the finding worth reporting, since that
     # is the one that fails silently.
-    if "bare" in results:
-        print("bare")
-    elif results:
-        print("pinned")
-    else:
-        print("missing")
+    chosen = next((pair for pair in results if pair[0] == "bare"), None)
+    if chosen is None:
+        chosen = results[0] if results else None
+
+    if want_program:
+        if chosen is not None:
+            print(program_of(chosen[1]))
+        return 0
+
+    print(chosen[0] if chosen is not None else "missing")
     return 0
 
 

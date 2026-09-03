@@ -175,6 +175,13 @@ rather than as one `git` rule.
 
 ## RTK: hook-enforced
 
+RTK is optional. Nothing else in this overlay depends on it: the term mapping,
+the scoped approvals and the permission modes all apply whether or not rtk is
+installed. [`scripts/rtk-guard.sh`](./scripts/rtk-guard.sh) treats a machine
+with no hook and no `rtk` on PATH as a machine that has not adopted RTK, and
+exits 0. Adopt it with `brew install rtk` (homebrew-core) or from
+<https://www.rtk-ai.app/>.
+
 Claude Code is RTK's default hook target. `rtk init` installs a PreToolUse hook
 that rewrites shell commands to their RTK equivalents before they execute, so
 RTK stays active without the agent selecting `rtk` subcommands by hand. This is
@@ -200,23 +207,33 @@ the line to set by hand.
 Equivalent manual steps, if you would rather not run the script:
 
 ```bash
-rtk init -g --hook-only --auto-patch   # 1. hook + settings.json patch, nothing else
-command -v rtk                         # 2. note the absolute path it prints
-#    3. edit <agent-home>/settings.json and change the hook's
-#       "command": "rtk hook claude"  ->  "command": "<absolute-path> hook claude"
+# 1. Install the hook and patch settings.json, and nothing else.
+rtk init -g --hook-only --auto-patch
+
+# 2. Note the absolute path this prints.
+command -v rtk
+
+# 3. Edit <agent-home>/settings.json and change the hook's command from
+#    "rtk hook claude" to "<that absolute path> hook claude".
 ```
 
 Either way, verify with [`scripts/rtk-guard.sh`](./scripts/rtk-guard.sh), which
 exits non-zero until the hook is installed, pinned, and free of duplicate RTK.md
-guidance. It counts the hook as installed only when `settings.json` carries a
-real `hooks.PreToolUse` registration of `rtk hook claude` under a matcher that
+guidance, and treats "no hook, no rtk" as opting out rather than as a fault. It
+counts the hook as installed only when `settings.json` carries a real
+`hooks.PreToolUse` registration of `rtk hook claude` under a matcher that
 selects `Bash` — rtk writes no hook script of its own, so nothing else is
 evidence that Claude Code will invoke it, and a hook registered for another tool
 or event never sees a shell command. "Pinned" likewise means an absolute path:
 `./rtk` and `bin/rtk` resolve against a working directory the hook cannot
 predict, so they are as fragile as the bare name.
 
-Establishing either fact means parsing `settings.json`, which
+A pin is also checked for still pointing at something: `rtk-guard.sh` verifies
+the pinned path exists and is executable. Homebrew moves from `/usr/local` to
+`/opt/homebrew` between Intel and Apple Silicon, and uninstalling rtk leaves the
+registration behind — both leave a hook that reads as correct and never runs.
+
+Establishing any of this means parsing `settings.json`, which
 [`scripts/rtk-hook-probe.py`](./scripts/rtk-hook-probe.py) does. Without
 Python 3 the guard reports that it cannot verify and exits non-zero, rather than
 inferring a pass from matching lines.
