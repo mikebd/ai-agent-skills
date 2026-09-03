@@ -14,7 +14,7 @@ Use this guide when the task involves auditing a live Postgres database or expor
 
 ## Connection source
 - Use a dedicated DB-only env file when available.
-- Keep the env file path and default schema only in local wrapper docs (e.g. under `~/.codex`).
+- Keep the env file path and default schema only in local wrapper docs under the agent home (`${CODEX_HOME:-~/.codex}`, `${CLAUDE_CONFIG_DIR:-~/.claude}`, or equivalent).
 - If the local wrapper documents an applicable read-only `psql` shim command, prefer that shim over raw `psql` or ad-hoc Docker client invocations.
 - Do not print secrets in chat output.
 - Verify required keys exist before connecting: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, optional `DB_SCHEMA`, `DB_SSL_MODE`.
@@ -72,8 +72,8 @@ Use this guide when the task involves auditing a live Postgres database or expor
 - Confirm no writes were executed.
 
 ## Escalation and permissions
-- If Docker socket or network access is blocked by sandbox, request escalation.
-- Keep escalated commands narrowly scoped to read-only objectives.
+- If Docker socket or network access is unavailable under constrained execution, request elevated execution; see the execution model overlay for the active agent.
+- Keep elevated commands narrowly scoped to read-only objectives.
 
 ## Before/after rerun comparison protocol
 Use this when upcoming work may overwrite existing result rows.

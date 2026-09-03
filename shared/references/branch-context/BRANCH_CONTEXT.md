@@ -24,6 +24,7 @@ working repository. If no root resolves, proceed normally without BC.
 - [Structure](#structure)
 - [File roles](#file-roles)
 - [Product insulation](#product-insulation)
+  - [PR description exception](#pr-description-exception)
 - [Reading](#reading)
 - [Instruction freshness](#instruction-freshness)
 - [Writing and lifecycle](#writing-and-lifecycle)
@@ -164,6 +165,20 @@ generic path or configuration interface, but must not require or prescribe a
 BC location. Generic local worktree tooling may also create or repair a
 `.context` link as workspace plumbing, provided it does not read BC content or
 affect product behavior.
+
+### PR description exception
+
+A pull request description (or equivalent host-platform proposal description,
+such as a merge request) is host-platform collaboration metadata, not
+committed product source. It need not remain independently usable without BC
+access the way source, tests, CI, contracts, configuration, documentation,
+runbooks, release artifacts, and ADRs must. A PR description may therefore
+include a Branch Context link — for example, at the top, pointing to the BC's
+origin path rather than a specific file — as a convenience for reviewers.
+
+This exception is narrow: it covers only the PR/MR description field itself.
+Commit messages, code comments, and any other committed repository content
+remain covered by the insulation rule above and must not reference BC.
 
 ## Reading
 

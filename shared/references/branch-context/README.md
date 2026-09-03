@@ -47,14 +47,28 @@ independent source lines share the same configuration value:
 
 ```toml
 developer_instructions = """
-At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md before running commands.
+At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md and /ABS/PATH/TO/ai-agent-skills/codex/EXECUTION_MODEL.md before running commands.
 At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/branch-context/BRANCH_CONTEXT.md before running commands.
 """
 ```
 
-Replace `/ABS/PATH/TO/ai-agent-skills` with the local clone path. Omit the
-runtime line when BC is the only reference in use. The runtime reference does
-not import or index BC; each consumer must explicitly source BC when wanted.
+For Claude Code, add a BC import to `~/.claude/CLAUDE.md`. The same file can
+carry both independent references:
+
+```markdown
+@/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md
+@/ABS/PATH/TO/ai-agent-skills/claude/EXECUTION_MODEL.md
+
+@/ABS/PATH/TO/ai-agent-skills/shared/references/branch-context/BRANCH_CONTEXT.md
+```
+
+[`claude/CLAUDE.md.example`](../../../claude/CLAUDE.md.example) is a copyable
+version of this file; delete the runtime lines to source BC alone.
+
+In both cases, replace `/ABS/PATH/TO/ai-agent-skills` with the local clone
+path. Omit the runtime line when BC is the only reference in use. The runtime
+reference does not import or index BC; each consumer must explicitly source BC
+when wanted.
 
 ## Effective workflow
 

@@ -45,7 +45,7 @@ Select one source in this order:
    This override is authoritative. If its `--version` check fails, report the
    failure and do not silently select another source.
 2. `ai-agent-launcher` found on `PATH`.
-3. The canonical checkout at `$HOME/src/mikebd/py/scripts`, invoked with
+3. The canonical checkout at `~/src/mikebd/py/scripts`, invoked with
    `uv run ai-agent-launcher`.
 4. The current task checkout, invoked with `uv run ai-agent-launcher`, when
    its `--version` command succeeds.

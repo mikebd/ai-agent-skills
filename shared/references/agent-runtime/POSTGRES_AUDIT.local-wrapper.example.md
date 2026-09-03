@@ -2,8 +2,9 @@
 
 Purpose: keep machine/project-specific defaults out of git while layering them on top of the shared repo guidance.
 
-Local-only file location (recommended):
-- `~/.codex/POSTGRES_AUDIT.local.md`
+Local-only file location (recommended), under the agent home:
+- Codex: `${CODEX_HOME:-~/.codex}/POSTGRES_AUDIT.local.md`
+- Claude Code: `${CLAUDE_CONFIG_DIR:-~/.claude}/POSTGRES_AUDIT.local.md`
 
 ## Local defaults (do not commit)
 - DB env file path: `<PROJECT_DB_ENV_FILE>`
@@ -23,7 +24,7 @@ Local-only file location (recommended):
    - `<PROJECT_CORE_PSQL_RO_SHIM>`
 
 ## Example local values
-- Omitted intentionally. Keep all concrete values only in your local `~/.codex/POSTGRES_AUDIT.local.md`.
+- Omitted intentionally. Keep all concrete values only in your local `<agent-home>/POSTGRES_AUDIT.local.md`.
 
 ## Optional local shim policy
 - If an applicable shim command is available, use it as the first-choice connection command for snapshot/audit work.

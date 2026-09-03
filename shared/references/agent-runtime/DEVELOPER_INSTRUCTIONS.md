@@ -2,7 +2,8 @@
 
 Source baseline: originally staged from `~/.codex/config.toml` `developer_instructions`.
 
-This version is repo-canonical. Keep `~/.codex` as a thin pointer/override layer.
+This version is repo-canonical and agent-neutral. Keep the agent home
+(`~/.codex`, `~/.claude`, or equivalent) as a thin pointer/override layer.
 
 Canonical location (repo-root relative): `shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md`
 Reference resolution rule: treat relative doc paths in this file as repo-root-relative.
@@ -10,19 +11,39 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 ## Bootstrap
 - At session start, read shared/references/agent-runtime/DOC_MAP.md.
 - Use DOC_MAP.md as the source of truth for which RMAR docs to read for the current task.
+- Read the execution-model overlay for the active agent before requesting or
+  configuring command approvals; DOC_MAP.md lists the available overlays.
 - Before selecting local shell commands, read the RMAR docs that govern command choice for the current task.
 - If local shell commands, search commands, git commands, or Go test/build/vet commands are likely, read shared/references/agent-runtime/RTK.md before choosing commands.
 - Treat RTK guidance as operational policy, not optional advice, when RTK.md applies.
+- RTK enforcement differs by agent: some agents rewrite commands through a hook,
+  others rely on the selection rules alone. Take the active mode from the
+  execution model overlay before hand-selecting commands.
+
+## Execution Model Terms
+These terms are agent-neutral. The overlay for the active agent maps each one
+onto that agent's concrete mechanism.
+
+- Constrained execution: the agent's most restricted default execution mode
+  (for example a filesystem/network sandbox, or a per-command approval prompt).
+- Elevated execution: execution granted the access a command actually needs,
+  after an explicit approval step.
+- Scoped approval: a pre-authorization keyed to a specific command prefix
+  rather than a broad or blanket grant.
 
 ## Execution Safety
-- For test/lint workflows, do NOT request escalated permissions on first attempt.
-- Run in sandbox first, using /tmp caches when needed (e.g. GOCACHE, GOMODCACHE, GOLANGCI_LINT_CACHE),
-  and escalate only if sandbox execution actually fails for reasons unrelated to cache location.
+- For test/lint workflows, do NOT request elevated execution on first attempt.
+- Run under constrained execution first, using /tmp caches when needed (e.g. GOCACHE, GOMODCACHE, GOLANGCI_LINT_CACHE),
+  and escalate only if constrained execution actually fails for reasons unrelated to cache location.
+- Where a workflow below says to request elevated execution immediately, that
+  overrides the constrained-first default because the constrained attempt is
+  known to fail rather than merely likely to.
 
 ## Machine-Local Operational Notes
 - For stable, non-secret, developer/machine-specific runtime assumptions that
   are useful across sessions but do not belong in repo docs or branch context,
-  prefer the machine-local note `~/.codex/LOCAL-MACHINE.md`.
+  prefer the machine-local note `<agent-home>/LOCAL-MACHINE.md`. The
+  execution-model overlay for the active agent defines `<agent-home>`.
 - Use it for non-secret operational facts such as local shim behavior, Docker
   fallback behavior, preferred local tool paths, and similar persistent machine
   assumptions.
@@ -32,24 +53,24 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 - Read it only when relevant to the current task.
 
 ### Frontend Browser Test Workflows
-- For browser-driven frontend test runners that start local servers or bind TCP ports (for example `ng test`/Karma, Playwright, Cypress), request escalated execution immediately instead of sandbox-first.
-- Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "test"]`, `["ng", "test"]`, `["npx", "playwright", "test"]`, or `["npx", "cypress", "run"]`.
+- For browser-driven frontend test runners that start local servers or bind TCP ports (for example `ng test`/Karma, Playwright, Cypress), request elevated execution immediately instead of attempting constrained execution first.
+- Prefer narrowly scoped approvals for command prefixes such as `npm test`, `ng test`, `npx playwright test`, or `npx cypress run`.
 
 ### Node / npm Network Workflows
-- When working in any repo that uses Node-based tooling, if `npm install`, `npm ci`, `npx`, or similar npm commands are likely to require registry/network access, request escalated execution immediately instead of attempting the command in the sandbox first.
-- Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "install"]`, `["npm", "ci"]`, or `["npm", "run", "start"]`.
-- If a Node build/test step is expected to fetch remote assets at runtime (for example Angular production font/CSS inlining from external hosts), request escalated execution immediately instead of attempting sandbox-first.
+- When working in any repo that uses Node-based tooling, if `npm install`, `npm ci`, `npx`, or similar npm commands are likely to require registry/network access, request elevated execution immediately instead of attempting the command under constrained execution first.
+- Prefer narrowly scoped approvals for command prefixes such as `npm install`, `npm ci`, or `npm run start`.
+- If a Node build/test step is expected to fetch remote assets at runtime (for example Angular production font/CSS inlining from external hosts), request elevated execution immediately instead of attempting constrained execution first.
 
 ### Python / uv Network Workflows
-- When working in any repo that uses Python-based tooling, if `uv sync`, `uv lock`, `uv pip install`, `uv run` with dependency resolution, `pip install`, `poetry install`, or similar commands are likely to require package-index/network access, request escalated execution immediately instead of attempting the command in the sandbox first.
-- Prefer narrowly scoped `prefix_rule` approvals such as `["uv", "sync"]`, `["uv", "lock"]`, `["uv", "pip", "install"]`, `["pip", "install"]`, or `["poetry", "install"]`.
+- When working in any repo that uses Python-based tooling, if `uv sync`, `uv lock`, `uv pip install`, `uv run` with dependency resolution, `pip install`, `poetry install`, or similar commands are likely to require package-index/network access, request elevated execution immediately instead of attempting the command under constrained execution first.
+- Prefer narrowly scoped approvals for command prefixes such as `uv sync`, `uv lock`, `uv pip install`, `pip install`, or `poetry install`.
 
 ### Local Dev Server Workflows
-- When starting a local development server that is expected to bind to a TCP port for browser, API, or webhook access, request escalated execution immediately instead of first attempting to run it in the sandbox.
-- Prefer narrowly scoped `prefix_rule` approvals such as `["npm", "run", "start"]`, `["npx", "ng", "serve"]`, `["vite"]`, `["next", "dev"]`, or similar repo-appropriate dev-server commands.
+- When starting a local development server that is expected to bind to a TCP port for browser, API, or webhook access, request elevated execution immediately instead of first attempting to run it under constrained execution.
+- Prefer narrowly scoped approvals for command prefixes such as `npm run start`, `npx ng serve`, `vite`, `next dev`, or similar repo-appropriate dev-server commands.
 
 ## Git Permissions
-- For git operations in this environment, use elevated permissions by default for:
+- For git operations in this environment, use elevated execution by default for:
   - git add
   - git commit
   - git fetch
@@ -59,11 +80,11 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
   - git rebase
   - git branch -d / -m
   - git worktree add / remove
-  (instead of attempting sandboxed execution first).
+  (instead of attempting constrained execution first).
 - In a linked worktree, ref-writing operations can update shared Git metadata
   under `git rev-parse --git-common-dir` (for example, `packed-refs`), not only
-  the worktree-specific Git directory. Do not expand sandbox write access for
-  these operations; request elevation for the specific Git command.
+  the worktree-specific Git directory. Do not expand constrained-execution write
+  access for these operations; request elevation for the specific Git command.
 
 ### Git Lock Safety
 - Never run git index-writing commands in parallel (`git add`, `git commit`, `git merge`, `git rebase`, `git checkout`, `git stash`, etc.); execute them serially.
@@ -113,3 +134,6 @@ When asked to update the RMAR:
 - After making any RMAR change, reread the updated RMAR document(s) before continuing so subsequent actions follow the new instructions.
 - For examples captured in RMAR, anonymize content so it does not reflect private repository contents.
 - Keep RMAR documents consistent, cohesive, non-conflicting, and non-contradicting as a set.
+- Keep this document agent-neutral. Agent-specific mechanics (approval syntax,
+  agent-home paths, sandbox behavior) belong in that agent's execution-model
+  overlay, not here.
