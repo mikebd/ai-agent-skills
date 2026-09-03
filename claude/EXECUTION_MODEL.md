@@ -76,7 +76,7 @@ git merge, git rebase, npm test, ng test       not rewritten
 ```
 
 `settings.json.example` therefore lists both forms — raw rules for machines
-without the hook, `rtk `-prefixed rules for machines with it. Keeping both means
+without the hook, `rtk`-prefixed rules for machines with it. Keeping both means
 the file behaves the same before and after `rtk-install.sh`, and survives an
 uninstall.
 

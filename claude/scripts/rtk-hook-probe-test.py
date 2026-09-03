@@ -12,10 +12,13 @@ violated. These cases pin the whole property instead.
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+
+HAS_NODE = shutil.which("node") is not None
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -69,6 +72,35 @@ class MatcherSemantics(unittest.TestCase):
 
     def test_uncompilable_pattern_is_not_a_match(self):
         self.assertFalse(probe.matches_bash("Bash("))
+
+    @unittest.skipUnless(HAS_NODE, "requires node to test JS regex semantics")
+    def test_javascript_only_syntax(self):
+        # Valid JavaScript, invalid Python: named-group syntax differs --
+        # (?<name>...) in JavaScript, (?P<name>...) in Python -- and Python
+        # raises re.error on the JS form. This is a live Bash registration
+        # under Claude Code and was reported as missing before this class of
+        # pattern was tested with node instead of `re`.
+        self.assertTrue(probe.matches_bash(r"(?<tool>Bash)"))
+        # Invalid in both engines: still correctly not a match.
+        self.assertFalse(probe.matches_bash("Bash(?<"))
+
+    def test_js_regex_test_returns_none_without_node(self):
+        # The negative path matters as much as the positive one: None must
+        # mean "could not check", so the caller falls back to `re` instead of
+        # silently treating "unknown" as "does not match".
+        real_which = shutil.which
+        try:
+            shutil.which = lambda name: None
+            self.assertIsNone(probe._js_regex_test("Bash", "Bash"))
+        finally:
+            shutil.which = real_which
+
+    @unittest.skipUnless(HAS_NODE, "requires node")
+    def test_js_regex_test_direct(self):
+        self.assertTrue(probe._js_regex_test("ash.*", "Bash"))
+        self.assertFalse(probe._js_regex_test("^Edit$", "Bash"))
+        # Invalid even as JavaScript: a definite False, not "unknown".
+        self.assertFalse(probe._js_regex_test("Bash(?<", "Bash"))
 
     def test_non_string_matcher(self):
         for matcher in (1, [], {}, True):

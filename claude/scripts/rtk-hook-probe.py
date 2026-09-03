@@ -20,6 +20,8 @@ import json
 import os
 import re
 import shlex
+import shutil
+import subprocess
 import sys
 
 
@@ -29,8 +31,43 @@ import sys
 EXACT_MATCH_ONLY = re.compile(r"[A-Za-z0-9_\- ,|]+")
 
 
+def _js_regex_test(pattern, value):
+    """Test `value` against `pattern` with JavaScript RegExp semantics.
+
+    Returns True or False when `node` is available and the pattern is at least
+    syntactically valid JavaScript. Returns None when `node` cannot be found or
+    cannot be run, so the caller knows to fall back rather than reading None as
+    "does not match". A pattern that IS invalid in JavaScript returns False --
+    Claude Code would never treat it as a firing matcher either.
+    """
+    node = shutil.which("node")
+    if node is None:
+        return None
+    # Arguments, not string interpolation: `pattern` is untrusted content from
+    # settings.json and must never reach a shell or a constructed JS literal.
+    script = (
+        "try {"
+        "  process.stdout.write(String(new RegExp(process.argv[1]).test(process.argv[2])));"
+        "} catch (e) {"
+        "  process.exit(2);"
+        "}"
+    )
+    try:
+        result = subprocess.run(
+            [node, "-e", script, pattern, value],
+            capture_output=True, text=True, timeout=5, check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode == 2:
+        return False
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip() == "true"
+
+
 def matches_bash(matcher):
-    """Whether a PreToolUse entry's matcher selects the Bash tool.
+    r"""Whether a PreToolUse entry's matcher selects the Bash tool.
 
     Claude Code decides how to read a matcher from the characters in it:
 
@@ -43,9 +80,16 @@ def matches_bash(matcher):
       selects Bash, and matching it with an anchored test would report a live
       hook as missing.
 
-    A pattern Python cannot compile returns False, which the caller reports as
-    a missing hook. That is the safe direction for a setup check: it says "not
-    verified" rather than claiming a hook is in place.
+    Testing the pattern is the hard part: Claude Code evaluates it as a
+    JavaScript regular expression, and Python's `re` is not that engine. A
+    matcher can be valid JavaScript and invalid Python -- `(?<tool>Bash)` is a
+    named group in JavaScript, where Python instead uses `(?P<tool>...)` and
+    raises `re.error` on the JS form. `_js_regex_test` shells out to `node`,
+    when present, to test the pattern the way Claude Code actually will.
+    Without `node`, this falls back to Python's `re`, which is only an
+    approximation -- a pattern valid in JavaScript but not in Python is then
+    treated as never matching, the same safe direction as a pattern invalid in
+    both.
     """
     if matcher is None or matcher in ("", "*"):
         return True
@@ -53,6 +97,9 @@ def matches_bash(matcher):
         return False
     if EXACT_MATCH_ONLY.fullmatch(matcher):
         return "Bash" in [name.strip() for name in re.split(r"[|,]", matcher)]
+    result = _js_regex_test(matcher, "Bash")
+    if result is not None:
+        return result
     try:
         return re.search(matcher, "Bash") is not None
     except re.error:
