@@ -11,7 +11,9 @@
 #      /opt/homebrew/bin), and an unresolvable hook fails silently -- no error,
 #      no rewrites.
 #
-# Idempotent. Backs up settings.json before editing. Use --dry-run to preview.
+# Idempotent. Backs up settings.json as it was before this script ran -- taken
+# before the first mutation, so restoring it undoes the whole run, not just the
+# pin. Use --dry-run to preview.
 set -euo pipefail
 
 dry_run=false
@@ -41,6 +43,16 @@ fi
 rtk_abs="$(command -v rtk)"
 echo "rtk:       ${rtk_abs}"
 
+backup=""
+take_backup() {
+  # settings.json as it was before this script modified anything.
+  # Called before each mutation; only the first call does the work.
+  [ -n "${backup}" ] && return 0
+  [ -f "${settings}" ] || return 0
+  backup="${settings}.$(date +%Y%m%d%H%M%S).bak"
+  cp "${settings}" "${backup}"
+}
+
 # --- Step 1: install the hook if absent -------------------------------------
 hook_present=false
 if [ -f "${settings}" ] && grep -q '"rtk[[:space:]][[:space:]]*hook\|/rtk[[:space:]][[:space:]]*hook' "${settings}" 2>/dev/null; then
@@ -54,6 +66,7 @@ else
     echo "hook:      would run: rtk init -g --hook-only --auto-patch"
   else
     mkdir -p "${config_dir}"
+    take_backup
     [ -f "${settings}" ] || printf '{}\n' > "${settings}"
     rtk init -g --hook-only --auto-patch >/dev/null
     echo "hook:      installed"
@@ -92,11 +105,9 @@ else
   if [ "${dry_run}" = true ]; then
     echo "PATH:      would pin to ${rtk_abs}"
   else
-    backup="${settings}.$(date +%Y%m%d%H%M%S).bak"
-    cp "${settings}" "${backup}"
+    take_backup
     printf '%s\n' "${content/${bare}/${pinned}}" > "${settings}"
     echo "PATH:      pinned to ${rtk_abs}"
-    echo "backup:    ${backup}"
   fi
 fi
 
@@ -116,6 +127,10 @@ if command -v python3 >/dev/null 2>&1; then
   fi
 fi
 
+[ -n "${backup}" ] && echo "backup:    ${backup} (state before this run)"
+
 echo
 echo "Restart Claude Code, then confirm the hook fires:"
 echo "  git status && rtk gain --history"
+echo
+echo "To remove the hook entirely: rtk init -g --uninstall"
