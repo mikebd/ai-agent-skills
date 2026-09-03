@@ -10,19 +10,19 @@ Use `scripts/get_local_auth.sh` to fetch credentials for local requests.
 Get token + QA company ID:
 
 ```bash
-~/.codex/skills/madsense-local-backend-auth/scripts/get_local_auth.sh
+"${CODEX_HOME:-$HOME/.codex}/skills/madsense-local-backend-auth/scripts/get_local_auth.sh"
 ```
 
 Run an idempotent GraphQL smoke test (`__typename`):
 
 ```bash
-~/.codex/skills/madsense-local-backend-auth/scripts/get_local_auth.sh --test-graphql
+"${CODEX_HOME:-$HOME/.codex}/skills/madsense-local-backend-auth/scripts/get_local_auth.sh" --test-graphql
 ```
 
 Emit shell exports:
 
 ```bash
-eval "$(~/.codex/skills/madsense-local-backend-auth/scripts/get_local_auth.sh --exports)"
+eval "$("${CODEX_HOME:-$HOME/.codex}/skills/madsense-local-backend-auth/scripts/get_local_auth.sh" --exports)"
 ```
 
 Then use:
