@@ -1,0 +1,11 @@
+<!--
+Alternative to CLAUDE.md.example for anyone who prefers instruction lines over
+@-imports. Same effect, but the referenced files are read on demand rather than
+inlined into every session's context.
+
+Copy to ~/.claude/CLAUDE.md and replace /ABS/PATH/TO/ai-agent-skills with your
+local clone path. Keep only the lines you want.
+-->
+
+At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md and /ABS/PATH/TO/ai-agent-skills/claude/EXECUTION_MODEL.md before running commands.
+At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/branch-context/BRANCH_CONTEXT.md before running commands.

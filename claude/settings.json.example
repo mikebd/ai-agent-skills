@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git branch -d:*)",
+      "Bash(git branch -m:*)",
+      "Bash(git worktree add:*)",
+      "Bash(git worktree remove:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(npm install:*)",
+      "Bash(npm ci:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run start:*)",
+      "Bash(ng test:*)",
+      "Bash(npx ng serve:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(npx cypress run:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv lock:*)",
+      "Bash(uv pip install:*)",
+      "Bash(pip install:*)",
+      "Bash(poetry install:*)"
+    ]
+  }
+}

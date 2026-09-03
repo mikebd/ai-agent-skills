@@ -1,0 +1,19 @@
+<!--
+Copy this file to ~/.claude/CLAUDE.md (user scope), or merge its contents into
+an existing ~/.claude/CLAUDE.md.
+
+Replace every /ABS/PATH/TO/ai-agent-skills with your local clone path.
+
+Both references below are independent opt-ins. Keep only the lines you want:
+sourcing runtime guidance does not imply sourcing Branch Context, and BC can be
+sourced on its own.
+-->
+
+# Agent runtime references
+
+@/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md
+@/ABS/PATH/TO/ai-agent-skills/claude/EXECUTION_MODEL.md
+
+# Branch Context
+
+@/ABS/PATH/TO/ai-agent-skills/shared/references/branch-context/BRANCH_CONTEXT.md

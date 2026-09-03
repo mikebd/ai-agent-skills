@@ -16,7 +16,11 @@ not require either checkout.
 
 - `codex/skills`: Source-of-truth Codex skills (folders with SKILL.md)
 - `codex/packages`: Optional packaged .skill bundles for sharing
+- `codex/EXECUTION_MODEL.md`: Codex mapping for the agent-neutral runtime contract
 - `claude/skills`: Claude-specific skill/prompt formats
+- `claude/EXECUTION_MODEL.md`: Claude Code mapping for the agent-neutral runtime contract
+- `claude/CLAUDE.md.example`: Copyable `~/.claude/CLAUDE.md` bootstrap
+- `claude/settings.json.example`: Optional permission allowlist matching the runtime contract
 - `shared/scripts`: Cross-agent utilities
 - `shared/references`: Cross-agent docs and references
 - `shared/references/agent-runtime`: Shared runtime guidance/docs reusable across agents
@@ -37,6 +41,33 @@ request; they do not replace the product code, tests, or independent review.
 - Read the [Branch Context adoption guide](shared/references/branch-context/README.md).
 - See the [canonical behavior reference](shared/references/branch-context/BRANCH_CONTEXT.md).
 - Browse the [public BC catalog](https://github.com/mikebd/public-branch-context/blob/main/README.md).
+
+## Supported agents
+
+Runtime guidance and Branch Context are agent-neutral. Each agent is wired up
+through its own bootstrap mechanism and an execution model overlay that maps
+the neutral execution terms onto that agent's real permission mechanics.
+
+| Agent | Bootstrap | Overlay |
+| --- | --- | --- |
+| Codex | `developer_instructions` in `~/.codex/config.toml` | [`codex/EXECUTION_MODEL.md`](codex/EXECUTION_MODEL.md) |
+| Claude Code | `~/.claude/CLAUDE.md` | [`claude/EXECUTION_MODEL.md`](claude/EXECUTION_MODEL.md) |
+
+See the [agent runtime README](shared/references/agent-runtime/README.md) for
+step-by-step setup for each.
+
+
+## Claude Code install
+
+1. Clone this repo locally.
+2. Copy [`claude/CLAUDE.md.example`](claude/CLAUDE.md.example) to
+   `~/.claude/CLAUDE.md` (or merge it into an existing one) and replace
+   `/ABS/PATH/TO/ai-agent-skills` with your clone path.
+3. Optionally merge [`claude/settings.json.example`](claude/settings.json.example)
+   into `~/.claude/settings.json`.
+
+Keep only the reference lines you want: runtime guidance and Branch Context are
+independent opt-ins.
 
 ## Codex install
 
@@ -60,5 +91,5 @@ This copies the specified skill: `~/.codex/skills/<skill-name>` into `codex/skil
 
 `shared/references/agent-runtime` is where reusable non-secret runtime material is staged so local agent-home files can later be replaced by lightweight pointers/references.
 
-Keep in `~/.codex` only machine-local/private state (tokens, local overrides, history, sqlite/session state).
-For docs that need local defaults (for example env file paths or default DB schema), keep placeholders in repo docs and provide local wrappers in `~/.codex` (see `POSTGRES_AUDIT.local-wrapper.example.md`).
+Keep in the agent home (`~/.codex`, `~/.claude`) only machine-local/private state (tokens, local overrides, history, sqlite/session state).
+For docs that need local defaults (for example env file paths or default DB schema), keep placeholders in repo docs and provide local wrappers in the agent home (see `POSTGRES_AUDIT.local-wrapper.example.md`).
