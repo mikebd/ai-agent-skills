@@ -7,7 +7,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 skill_name="$1"
-if [[ "${skill_name}" == *"/"* ]] || [[ "${skill_name}" == *".."* ]]; then
+if [[ -z "${skill_name}" ]] || [[ "${skill_name}" == "." ]] || [[ "${skill_name}" == *"/"* ]] || [[ "${skill_name}" == *".."* ]]; then
   echo "Skill name must be a simple directory name." >&2
   exit 1
 fi

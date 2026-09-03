@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 source_dir="${repo_root}/codex/skills"
-target_dir="${HOME}/.codex/skills"
+target_dir="${HOME:?HOME must be set}/.codex/skills"
 
 mkdir -p "${target_dir}"
 
