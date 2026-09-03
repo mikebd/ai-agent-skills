@@ -21,6 +21,8 @@ not require either checkout.
 - `claude/EXECUTION_MODEL.md`: Claude Code mapping for the agent-neutral runtime contract
 - `claude/CLAUDE.md.example`: Copyable `~/.claude/CLAUDE.md` bootstrap
 - `claude/settings.json.example`: Optional permission allowlist matching the runtime contract
+- `claude/scripts/rtk-install.sh`: Installs the RTK hook for Claude Code, pinned to rtk's absolute path
+- `claude/scripts/rtk-guard.sh`: Checks the RTK hook for PATH fragility and duplicate RTK.md guidance
 - `shared/scripts`: Cross-agent utilities
 - `shared/references`: Cross-agent docs and references
 - `shared/references/agent-runtime`: Shared runtime guidance/docs reusable across agents
@@ -56,6 +58,16 @@ the neutral execution terms onto that agent's real permission mechanics.
 See the [agent runtime README](shared/references/agent-runtime/README.md) for
 step-by-step setup for each.
 
+RTK integration is asymmetric and each overlay documents its side: `rtk init`
+installs a command-rewriting hook for Claude Code, while `rtk init --codex`
+writes documentation only. Claude Code users should run
+[`claude/scripts/rtk-install.sh`](claude/scripts/rtk-install.sh) once. It installs
+the hook without RTK's upstream RTK.md, which would otherwise duplicate
+[`RTK.md`](shared/references/agent-runtime/RTK.md) in every session, and pins the
+hook to rtk's absolute path so it keeps working on GUI-launched surfaces, where a
+bare `rtk` fails silently. [`claude/scripts/rtk-guard.sh`](claude/scripts/rtk-guard.sh)
+verifies both. Codex users rely on
+the selection rules in that same document.
 
 ## Claude Code install
 

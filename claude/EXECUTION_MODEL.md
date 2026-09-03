@@ -81,6 +81,114 @@ executable (for example `Bash(npm:*)`) to avoid a second prompt.
   "Commit/Push Controls" in `DEVELOPER_INSTRUCTIONS.md`. Allowlisting a git
   command does not authorize running it unprompted.
 
+## RTK: hook-enforced
+
+Claude Code is RTK's default hook target. `rtk init` installs a PreToolUse hook
+that rewrites shell commands to their RTK equivalents before they execute, so
+RTK stays active without the agent selecting `rtk` subcommands by hand. This is
+the mode [`RTK.md`](../shared/references/agent-runtime/RTK.md) calls
+*hook-enforced*.
+
+Install once, per machine:
+
+```bash
+./claude/scripts/rtk-install.sh --dry-run   # preview
+./claude/scripts/rtk-install.sh             # install + pin
+```
+
+[`scripts/rtk-install.sh`](./scripts/rtk-install.sh) does both required steps:
+it runs `rtk init -g --hook-only --auto-patch`, then rewrites the hook command
+from the bare name `rtk` to an absolute path. The pin is not optional on macOS —
+see [Which surfaces this covers](#which-surfaces-this-covers). The script is
+idempotent, backs up `settings.json` before editing, preserves your existing
+settings, and revalidates the JSON afterwards. If it finds a hook in a format it
+does not recognize, it refuses to edit and prints the line to set by hand.
+
+Equivalent manual steps, if you would rather not run the script:
+
+```bash
+rtk init -g --hook-only --auto-patch   # 1. hook + settings.json patch, nothing else
+command -v rtk                         # 2. note the absolute path it prints
+#    3. edit ~/.claude/settings.json and change the hook's
+#       "command": "rtk hook claude"  ->  "command": "<absolute-path> hook claude"
+```
+
+Either way, verify with [`scripts/rtk-guard.sh`](./scripts/rtk-guard.sh), which
+exits non-zero until the hook is installed, pinned, and free of duplicate RTK.md
+guidance.
+
+Use `--hook-only` deliberately. Plain `rtk init -g` additionally writes
+`~/.claude/RTK.md` and adds an `@RTK.md` import to `~/.claude/CLAUDE.md`, which
+puts RTK's upstream command-selection guidance into every session's context.
+Under the hook that guidance is redundant — the hook already performs the
+selection — and it overlaps this repo's
+[`RTK.md`](../shared/references/agent-runtime/RTK.md), which is the canonical
+local policy and carries the raw-command exceptions, the `rtk_proxy.sh`
+fallback, and the Go test guidance. `--hook-only` installs the enforcement
+without the duplicated instructions.
+
+`--hook-only` also skips the optional filters template at
+`~/.config/rtk/filters.toml`; run `rtk config --create` if you want it.
+
+### Which surfaces this covers
+
+The install writes a user-scope `PreToolUse` hook into `~/.claude/settings.json`:
+
+```json
+{"hooks":{"PreToolUse":[{"matcher":"Bash",
+  "hooks":[{"type":"command","command":"rtk hook claude"}]}]}}
+```
+
+It therefore applies to any Claude Code surface that reads `~/.claude/settings.json`
+*and* runs its Bash tool on this machine — the terminal CLI and the IDE
+extensions. It does not apply to sessions whose tools execute on a remote host
+(claude.ai/code and other cloud-run sessions), which have neither this settings
+file nor the `rtk` binary.
+
+As installed, `command` is the bare name `rtk`, so the hook resolves it through
+the PATH of whatever process spawns it. A shell-launched session inherits the
+PATH that made `rtk` available in the first place. A GUI-launched application
+frequently does not inherit shell-profile PATH, which puts every common install
+location out of reach:
+
+| Install | Path | Typically on GUI PATH? |
+| --- | --- | --- |
+| Homebrew, Apple Silicon | `/opt/homebrew/bin/rtk` | no |
+| Homebrew, Intel Mac | `/usr/local/bin/rtk` | sometimes |
+| Cargo | `~/.cargo/bin/rtk` | no |
+| Linuxbrew | `/home/linuxbrew/.linuxbrew/bin/rtk` | no |
+
+Apple Silicon Homebrew is the default case for a Mac team and the worst one:
+`/opt/homebrew/bin` is added by a shell profile, so a desktop-launched session
+will not find `rtk`. The hook then does nothing — it fails silently, with no
+error and no rewrites, which reads exactly like RTK working but saving little.
+Pinning the absolute path in the hook `command` removes the dependency entirely
+and costs nothing on any surface.
+
+Verify per surface rather than assuming: run `command -v rtk` in a session
+there, then `git status` followed by `rtk gain --history`, and check the
+invocation was recorded.
+
+If a full `rtk init -g` was already run, [`scripts/rtk-guard.sh`](./scripts/rtk-guard.sh)
+reports the duplicate artifacts and prints the commands to remove them. It is
+report-only and never edits files; it exits non-zero when duplication is
+present, so it also works as a setup check.
+
+What this means during a session:
+
+- Write plain commands. `git status`, `go test ./...`, `cat file`, and
+  `grep -rn pat .` are rewritten to `rtk git status`, `rtk go test ./...`,
+  `rtk read file`, and `rtk grep -rn pat .`.
+- Do not hand-translate commands to RTK form to satisfy the selection rules in
+  `RTK.md`; the hook already does it. An explicit `rtk ...` command is not an
+  error — already-RTK commands pass through unwrapped — but it is redundant.
+- An `env VAR=x <cmd>` prefix is preserved; only the inner command is
+  rewritten.
+- `shared/scripts/rtk_proxy.sh` is not rewritten, so the verbose-command
+  fallback in `RTK.md` still behaves as documented.
+- `rtk hook check '<command>'` shows how any command would be rewritten,
+  without running it.
+
 ## Notes
 
 - Local wrapper docs that carry machine-specific or secret-bearing values live

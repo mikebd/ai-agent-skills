@@ -16,6 +16,9 @@ Reference resolution rule: treat relative doc paths in this file as repo-root-re
 - Before selecting local shell commands, read the RMAR docs that govern command choice for the current task.
 - If local shell commands, search commands, git commands, or Go test/build/vet commands are likely, read shared/references/agent-runtime/RTK.md before choosing commands.
 - Treat RTK guidance as operational policy, not optional advice, when RTK.md applies.
+- RTK enforcement differs by agent: some agents rewrite commands through a hook,
+  others rely on the selection rules alone. Take the active mode from the
+  execution model overlay before hand-selecting commands.
 
 ## Execution Model Terms
 These terms are agent-neutral. The overlay for the active agent maps each one

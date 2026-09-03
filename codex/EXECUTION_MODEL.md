@@ -41,6 +41,26 @@ poetry install      -> ["poetry", "install"]
 Keep each rule as narrow as the workflow allows. Do not widen a rule to a bare
 executable (for example `["npm"]`) to avoid a second prompt.
 
+## RTK: instruction-enforced
+
+RTK has no Codex hook. `rtk init --codex` writes `$CODEX_HOME/RTK.md` and adds
+a reference to `$CODEX_HOME/AGENTS.md`; it does not patch any hook or intercept
+commands. Codex is therefore *instruction-enforced* in the sense used by
+[`RTK.md`](../shared/references/agent-runtime/RTK.md): the command selection
+rules in that document are the only mechanism keeping RTK in use.
+
+Consequences:
+
+- Apply the strict command selection rules deliberately, per command. Nothing
+  will rewrite a raw `git status` into `rtk git status`.
+- Run the session preflight (`command -v rtk`, then `rtk --version`) rather than
+  assuming RTK is active.
+- State the reason briefly whenever a raw command is chosen over an RTK-native
+  one, so bypasses stay auditable.
+- Ignore the hook-oriented subcommands (`cc-economics`, `discover`, `learn`,
+  `session`, `hook-audit`); they read Claude Code history and hook telemetry
+  that Codex does not produce.
+
 ## Notes
 
 - `rtk go test` may run sandboxed by default; see
