@@ -7,7 +7,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 skill_name="$1"
-if [[ "${skill_name}" == *"/"* ]] || [[ "${skill_name}" == *".."* ]]; then
+if [[ -z "${skill_name}" ]] || [[ "${skill_name}" == "." ]] || [[ "${skill_name}" == *"/"* ]] || [[ "${skill_name}" == *".."* ]]; then
   echo "Skill name must be a simple directory name." >&2
   exit 1
 fi
@@ -33,7 +33,8 @@ if command -v rsync >/dev/null 2>&1; then
   rsync -a --delete "${source_dir}/" "${target_dir}/"
 else
   # Fallback: replace target contents with source.
-  rm -rf "${target_dir}"/*
+  rm -rf "${target_dir:?}"
+  mkdir -p "${target_dir}"
   cp -a "${source_dir}/." "${target_dir}/"
 fi
 
