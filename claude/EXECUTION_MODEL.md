@@ -43,24 +43,63 @@ scope) or a project's `.claude/settings.json`. Translate the command prefixes
 named in `DEVELOPER_INSTRUCTIONS.md`:
 
 ```text
-npm install         -> Bash(npm install:*)
-npm ci              -> Bash(npm ci:*)
 npm run start       -> Bash(npm run start:*)
 npm test            -> Bash(npm test:*)
 ng test             -> Bash(ng test:*)
 npx ng serve        -> Bash(npx ng serve:*)
 npx playwright test -> Bash(npx playwright test:*)
 npx cypress run     -> Bash(npx cypress run:*)
-uv sync             -> Bash(uv sync:*)
 uv lock             -> Bash(uv lock:*)
-uv pip install      -> Bash(uv pip install:*)
-pip install         -> Bash(pip install:*)
-poetry install      -> Bash(poetry install:*)
 ```
 
 See [`settings.json.example`](./settings.json.example) for a ready-to-merge
 starting point covering these plus the git operations listed under "Git
 Permissions".
+
+### Package installs are a separate, deliberate opt-in
+
+The remaining prefixes in `DEVELOPER_INSTRUCTIONS.md` reach a package index and
+run code that neither you nor the agent wrote:
+
+```text
+npm install         -> Bash(npm install:*)
+npm ci              -> Bash(npm ci:*)
+uv sync             -> Bash(uv sync:*)
+uv pip install      -> Bash(uv pip install:*)
+pip install         -> Bash(pip install:*)
+poetry install      -> Bash(poetry install:*)
+```
+
+These are **not** in `settings.json.example`, and that omission is deliberate.
+`npm install` runs `preinstall`/`install`/`postinstall` lifecycle scripts, and
+`pip install` and `uv pip install` take an agent-chosen package or source.
+Allowlisted, any of them turns a prompt-injected repository into arbitrary code
+execution with the agent's permissions, and the approval prompt is the only
+thing standing in the way.
+
+`DEVELOPER_INSTRUCTIONS.md` names these as the correct prefixes to scope *when
+you pre-authorize them* — it does not require pre-authorizing them at all. The
+default here is to let the prompt do its job, which costs one approval per
+session on a workflow that is rarely in the inner loop.
+
+To opt in anyway, on a machine and repository set you trust, merge the block
+above into `permissions.allow` yourself:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm ci:*)",
+      "Bash(uv sync:*)"
+    ]
+  }
+}
+```
+
+Prefer the lockfile-respecting commands (`npm ci`, `uv sync`, `poetry install`)
+over the ones that resolve whatever they are handed (`npm install`,
+`pip install`, `uv pip install`); they still execute package code, but only the
+code your lockfile already pins.
 
 `git commit` and `git push` are deliberately absent from that allowlist. Under
 "Commit/Push Controls" in `DEVELOPER_INSTRUCTIONS.md`, `git commit` must hold
@@ -116,7 +155,13 @@ command -v rtk                         # 2. note the absolute path it prints
 
 Either way, verify with [`scripts/rtk-guard.sh`](./scripts/rtk-guard.sh), which
 exits non-zero until the hook is installed, pinned, and free of duplicate RTK.md
-guidance.
+guidance. It counts the hook as installed only when `settings.json` carries a
+real `hooks.PreToolUse` registration of `rtk hook claude` — rtk writes no hook
+script of its own, so nothing else is evidence that Claude Code will invoke it.
+The structural check runs through
+[`scripts/rtk-hook-probe.py`](./scripts/rtk-hook-probe.py); without Python 3 the
+guard falls back to a line-oriented grep that cannot confirm the command sits
+under `PreToolUse`.
 
 Use `--hook-only` deliberately. Plain `rtk init -g` additionally writes
 `<agent-home>/RTK.md` and adds an `@RTK.md` import to `<agent-home>/CLAUDE.md`,

@@ -24,7 +24,7 @@ Use this skill to update the repository's current branch safely and surface conf
 
 ```bash
 # Run from a repo on the branch you want to update
-~/.codex/skills/git-update-branch/scripts/git-update-branch.sh
+"${CODEX_HOME:-$HOME/.codex}/skills/git-update-branch/scripts/git-update-branch.sh"
 ```
 
 ## What the script does

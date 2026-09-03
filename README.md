@@ -20,9 +20,10 @@ not require either checkout.
 - `claude/skills`: Claude-specific skill/prompt formats
 - `claude/EXECUTION_MODEL.md`: Claude Code mapping for the agent-neutral runtime contract
 - `claude/CLAUDE.md.example`: Copyable `~/.claude/CLAUDE.md` bootstrap
-- `claude/settings.json.example`: Optional permission allowlist matching the runtime contract
+- `claude/settings.json.example`: Optional permission allowlist matching the runtime contract, minus package installs
 - `claude/scripts/rtk-install.sh`: Installs the RTK hook for Claude Code, pinned to rtk's absolute path
-- `claude/scripts/rtk-guard.sh`: Checks the RTK hook for PATH fragility and duplicate RTK.md guidance
+- `claude/scripts/rtk-guard.sh`: Checks that the RTK hook is registered and pinned, and reports duplicate RTK.md guidance
+- `claude/scripts/rtk-hook-probe.py`: Helper for `rtk-guard.sh`; reports whether `settings.json` registers the hook, and whether it is pinned
 - `shared/scripts`: Cross-agent utilities
 - `shared/references`: Cross-agent docs and references
 - `shared/references/agent-runtime`: Shared runtime guidance/docs reusable across agents
@@ -76,7 +77,8 @@ the selection rules in that same document.
    `~/.claude/CLAUDE.md` (or merge it into an existing one) and replace
    `/ABS/PATH/TO/ai-agent-skills` with your clone path.
 3. Optionally merge [`claude/settings.json.example`](claude/settings.json.example)
-   into `~/.claude/settings.json`.
+   into `~/.claude/settings.json`. It deliberately omits package-install
+   commands; see [Package installs are a separate, deliberate opt-in](claude/EXECUTION_MODEL.md#package-installs-are-a-separate-deliberate-opt-in).
 
 Keep only the reference lines you want: runtime guidance and Branch Context are
 independent opt-ins.
@@ -103,5 +105,11 @@ This copies the specified skill: `~/.codex/skills/<skill-name>` into `codex/skil
 
 `shared/references/agent-runtime` is where reusable non-secret runtime material is staged so local agent-home files can later be replaced by lightweight pointers/references.
 
-Keep in the agent home (`~/.codex`, `~/.claude`) only machine-local/private state (tokens, local overrides, history, sqlite/session state).
+The rule governs *reusable non-secret material* only: once a doc is staged here, the agent home should hold a pointer to it rather than a second copy. Everything else in the agent home stays put. In particular, do not remove:
+
+- **Bootstrap files** that load the contract at session start: `~/.claude/CLAUDE.md`, `developer_instructions` in `~/.codex/config.toml`. These are what make the staged material reachable; deleting them deactivates runtime guidance entirely.
+- **Configuration**, including `~/.claude/settings.json` and the rest of `~/.codex/config.toml`.
+- **Synchronized skills** under `~/.codex/skills`, which `codex/sync-to-codex.sh` writes and expects to find.
+- **Machine-local/private state**: tokens, local overrides, history, sqlite/session state, and `<agent-home>/LOCAL-MACHINE.md`.
+
 For docs that need local defaults (for example env file paths or default DB schema), keep placeholders in repo docs and provide local wrappers in the agent home (see `POSTGRES_AUDIT.local-wrapper.example.md`).
