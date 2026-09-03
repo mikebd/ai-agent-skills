@@ -90,9 +90,8 @@ whatever `config.toml` contains.
 Not yet verified. The likely path is a project-level `AGENTS.md` at the root of
 the working directory, which is Codex's documented per-project instruction file
 and what `rtk init --codex` targets in its non-global mode. An agent-home
-`~/.codex/AGENTS.md` was **not** picked up in the test above, so the file must
-sit in the workspace the session actually opens. Test it with the same probe
-before relying on it.
+`~/.codex/AGENTS.md` was **not** picked up in the test above. Test a
+project-level file with the same probe before relying on it.
 
 Use absolute paths in whichever file carries the bootstrap. A `~/` prefix
 depends on the reader performing tilde expansion, which is not guaranteed

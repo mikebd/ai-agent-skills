@@ -41,7 +41,7 @@ fi
 
 duplicate=false
 [ -f "${rtk_md}" ] && duplicate=true
-if [ -f "${claude_md}" ] && grep -qE '^\s*@.*RTK\.md\s*$' "${claude_md}" 2>/dev/null; then
+if [ -f "${claude_md}" ] && grep -qE '^[[:space:]]*@.*RTK\.md[[:space:]]*$' "${claude_md}" 2>/dev/null; then
   duplicate=true
 fi
 
@@ -73,7 +73,7 @@ fi
 
 echo "RTK.md:    duplicate artifacts present"
 [ -f "${rtk_md}" ] && echo "           ${rtk_md}"
-if [ -f "${claude_md}" ] && grep -qE '^\s*@.*RTK\.md\s*$' "${claude_md}" 2>/dev/null; then
+if [ -f "${claude_md}" ] && grep -qE '^[[:space:]]*@.*RTK\.md[[:space:]]*$' "${claude_md}" 2>/dev/null; then
   echo "           @RTK.md import in ${claude_md}"
 fi
 

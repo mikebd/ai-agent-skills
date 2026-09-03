@@ -18,7 +18,7 @@ It gates tool calls through permission rules and a session permission mode.
 | Constrained execution | The default permission mode: each un-allowlisted `Bash` call raises an interactive approval prompt. |
 | Elevated execution | A command permitted without prompting, because a `permissions.allow` rule matches it or the user approved it for the session. |
 | Scoped approval | A `Bash(<prefix>:*)` entry in `permissions.allow` in `settings.json`. |
-| `<agent-home>` | `~/.claude` |
+| `<agent-home>` | `${CLAUDE_CONFIG_DIR:-~/.claude}` |
 
 ## What "request elevated execution immediately" means here
 
@@ -38,7 +38,7 @@ of the workflow rules in `DEVELOPER_INSTRUCTIONS.md` is:
 
 ## Scoped approvals
 
-Scoped approvals go in `permissions.allow` in `~/.claude/settings.json` (user
+Scoped approvals go in `permissions.allow` in `<agent-home>/settings.json` (user
 scope) or a project's `.claude/settings.json`. Translate the command prefixes
 named in `DEVELOPER_INSTRUCTIONS.md`:
 
@@ -101,15 +101,16 @@ it runs `rtk init -g --hook-only --auto-patch`, then rewrites the hook command
 from the bare name `rtk` to an absolute path. The pin is not optional on macOS —
 see [Which surfaces this covers](#which-surfaces-this-covers). The script is
 idempotent, backs up `settings.json` before editing, preserves your existing
-settings, and revalidates the JSON afterwards. If it finds a hook in a format it
-does not recognize, it refuses to edit and prints the line to set by hand.
+settings, and validates the JSON afterwards when Python 3 is available. If it
+finds a hook in a format it does not recognize, it refuses to edit and prints
+the line to set by hand.
 
 Equivalent manual steps, if you would rather not run the script:
 
 ```bash
 rtk init -g --hook-only --auto-patch   # 1. hook + settings.json patch, nothing else
 command -v rtk                         # 2. note the absolute path it prints
-#    3. edit ~/.claude/settings.json and change the hook's
+#    3. edit <agent-home>/settings.json and change the hook's
 #       "command": "rtk hook claude"  ->  "command": "<absolute-path> hook claude"
 ```
 
@@ -118,8 +119,9 @@ exits non-zero until the hook is installed, pinned, and free of duplicate RTK.md
 guidance.
 
 Use `--hook-only` deliberately. Plain `rtk init -g` additionally writes
-`~/.claude/RTK.md` and adds an `@RTK.md` import to `~/.claude/CLAUDE.md`, which
-puts RTK's upstream command-selection guidance into every session's context.
+`<agent-home>/RTK.md` and adds an `@RTK.md` import to `<agent-home>/CLAUDE.md`,
+which puts RTK's upstream command-selection guidance into every session's
+context.
 Under the hook that guidance is redundant — the hook already performs the
 selection — and it overlaps this repo's
 [`RTK.md`](../shared/references/agent-runtime/RTK.md), which is the canonical
@@ -132,14 +134,15 @@ without the duplicated instructions.
 
 ### Which surfaces this covers
 
-The install writes a user-scope `PreToolUse` hook into `~/.claude/settings.json`:
+The install writes a user-scope `PreToolUse` hook into
+`<agent-home>/settings.json`:
 
 ```json
 {"hooks":{"PreToolUse":[{"matcher":"Bash",
   "hooks":[{"type":"command","command":"rtk hook claude"}]}]}}
 ```
 
-It therefore applies to any Claude Code surface that reads `~/.claude/settings.json`
+It therefore applies to any Claude Code surface that reads that settings file
 *and* runs its Bash tool on this machine — the terminal CLI and the IDE
 extensions. It does not apply to sessions whose tools execute on a remote host
 (claude.ai/code and other cloud-run sessions), which have neither this settings
@@ -192,7 +195,7 @@ What this means during a session:
 ## Notes
 
 - Local wrapper docs that carry machine-specific or secret-bearing values live
-  under `~/.claude` (for example `~/.claude/POSTGRES_AUDIT.local.md`), never in
-  this repository.
-- `~/.claude/LOCAL-MACHINE.md` is the Claude Code location for the
+  under `<agent-home>` (for example
+  `<agent-home>/POSTGRES_AUDIT.local.md`), never in this repository.
+- `<agent-home>/LOCAL-MACHINE.md` is the Claude Code location for the
   machine-local operational notes described in `DEVELOPER_INSTRUCTIONS.md`.
