@@ -33,7 +33,8 @@ if command -v rsync >/dev/null 2>&1; then
   rsync -a --delete "${source_dir}/" "${target_dir}/"
 else
   # Fallback: replace target contents with source.
-  rm -rf "${target_dir}"/*
+  rm -rf "${target_dir:?}"
+  mkdir -p "${target_dir}"
   cp -a "${source_dir}/." "${target_dir}/"
 fi
 
