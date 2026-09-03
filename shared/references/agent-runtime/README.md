@@ -54,6 +54,11 @@ Replace `/ABS/PATH/TO/ai-agent-skills` with your local clone path.
 
 For Codex specifically, you should also see startup behavior follow the configured `developer_instructions` entrypoint.
 
+This applies to the Codex CLI. Other surfaces that share `~/.codex` do not
+necessarily consume `developer_instructions` — ChatGPT desktop Codex was
+verified not to — and they fail silently when they don't. See
+[Which surfaces this covers](../../../codex/EXECUTION_MODEL.md#which-surfaces-this-covers)
+for the check to run before trusting activation on a new surface or platform.
 
 ## Example: Claude Code bootstrap via `~/.claude/CLAUDE.md`
 

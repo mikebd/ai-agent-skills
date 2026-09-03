@@ -41,6 +41,63 @@ poetry install      -> ["poetry", "install"]
 Keep each rule as narrow as the workflow allows. Do not widen a rule to a bare
 executable (for example `["npm"]`) to avoid a second prompt.
 
+## Which surfaces this covers
+
+The Codex bootstrap in
+[`agent-runtime/README.md`](../shared/references/agent-runtime/README.md)
+configures `developer_instructions` in `${CODEX_HOME:-~/.codex}/config.toml`.
+That key is consumed by the **Codex CLI**. It is not consumed by every surface
+that shares the `~/.codex` directory.
+
+Verified 2026-09-02, ChatGPT desktop Codex on Linux x86_64, `rtk 0.45.0`:
+
+| Observation | Result |
+| --- | --- |
+| Reads `~/.codex` (config.toml, AGENTS.md, skills, rules) | yes |
+| `developer_instructions` present in `config.toml` | yes |
+| That text reaches the model's instructions | **no** |
+| `~/.codex/AGENTS.md` reaches the model's instructions | **no** |
+| Knows what RMAR/DOC_MAP.md are, unprompted | **no** |
+| Commands execute locally | yes |
+| `rtk` on PATH | yes |
+| Network reachable | **no** (`curl` returned 000) |
+| Approval prompt before running a command block | none |
+
+So on that surface RMAR and BC never activate, and the failure is silent —
+identical in shape to an unresolvable RTK hook. Confirm rather than assume,
+per surface and per platform, with this probe:
+
+> Without running any commands or reading any files: what does DOC_MAP.md
+> govern, and what is RMAR? If you don't know, say "don't know".
+
+An answer of "don't know" means the bootstrap did not reach the agent,
+whatever `config.toml` contains.
+
+### Consequences for this overlay
+
+- The term mapping below describes the Codex CLI's sandbox and `prefix_rule`
+  approvals. The desktop surface above prompted for nothing and confined writes
+  to the workspace while allowing machine-wide reads, so treat that mapping as
+  CLI-scoped until verified elsewhere.
+- Where network egress is blocked outright rather than gated by approval, the
+  "request elevated execution immediately" rules for npm/uv/dev-server
+  workflows in
+  [`DEVELOPER_INSTRUCTIONS.md`](../shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md)
+  have nothing to escalate to. Report the block rather than retrying.
+
+### Activating on a surface that ignores `developer_instructions`
+
+Not yet verified. The likely path is a project-level `AGENTS.md` at the root of
+the working directory, which is Codex's documented per-project instruction file
+and what `rtk init --codex` targets in its non-global mode. An agent-home
+`~/.codex/AGENTS.md` was **not** picked up in the test above, so the file must
+sit in the workspace the session actually opens. Test it with the same probe
+before relying on it.
+
+Use absolute paths in whichever file carries the bootstrap. A `~/` prefix
+depends on the reader performing tilde expansion, which is not guaranteed
+across surfaces.
+
 ## RTK: instruction-enforced
 
 RTK has no Codex hook. `rtk init --codex` writes `$CODEX_HOME/RTK.md` and adds
