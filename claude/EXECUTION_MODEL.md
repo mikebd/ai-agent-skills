@@ -178,6 +178,15 @@ Establishing either fact means parsing `settings.json`, which
 Python 3 the guard reports that it cannot verify and exits non-zero, rather than
 inferring a pass from matching lines.
 
+"Selects `Bash`" follows Claude Code's own matcher rules rather than a string
+comparison, because the difference is not cosmetic: `*`, an empty matcher and an
+absent one fire on every tool; a matcher of only letters, digits, `_`, `-`,
+spaces, `,` and `|` is an exact name or a list of them (`Edit, Bash` counts);
+anything else is an *unanchored* regular expression, so `ash.*` counts too.
+Treating a matcher as an anchored pattern reports live hooks as missing.
+[`scripts/rtk-hook-probe-test.py`](./scripts/rtk-hook-probe-test.py) pins these
+cases — run it directly, no dependencies.
+
 Use `--hook-only` deliberately. Plain `rtk init -g` additionally writes
 `<agent-home>/RTK.md` and adds an `@RTK.md` import to `<agent-home>/CLAUDE.md`,
 which puts RTK's upstream command-selection guidance into every session's

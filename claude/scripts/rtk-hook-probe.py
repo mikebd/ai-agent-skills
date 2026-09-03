@@ -18,21 +18,40 @@ import shlex
 import sys
 
 
+# A matcher built only from these characters is a name or a list of names;
+# anything else puts it on the regular-expression path. This is Claude Code's
+# rule, not ours -- see the table under "matcher" in its hooks documentation.
+EXACT_MATCH_ONLY = re.compile(r"[A-Za-z0-9_\- ,|]+")
+
+
 def matches_bash(matcher):
     """Whether a PreToolUse entry's matcher selects the Bash tool.
 
-    An absent, empty, or `*` matcher selects every tool. Otherwise Claude Code
-    treats the matcher as a regular expression against the tool name, so
-    `Bash|Edit` counts and `Edit` does not.
+    Claude Code decides how to read a matcher from the characters in it:
+
+    * `*`, an empty string, or an absent matcher fires on every tool.
+    * Letters, digits, `_`, `-`, spaces, `,` and `|` only: an exact tool name,
+      or a list of them separated by `|` or `,` with optional whitespace. So
+      `Bash`, `Edit|Bash` and `Edit, Bash` all select Bash, and `Edit` does not.
+    * Any other character: an unanchored JavaScript regular expression, tested
+      with `RegExp.prototype.test`. Unanchored is the part worth care -- `ash.*`
+      selects Bash, and matching it with an anchored test would report a live
+      hook as missing.
+
+    A pattern Python cannot compile returns False, which the caller reports as
+    a missing hook. That is the safe direction for a setup check: it says "not
+    verified" rather than claiming a hook is in place.
     """
     if matcher is None or matcher in ("", "*"):
         return True
     if not isinstance(matcher, str):
         return False
+    if EXACT_MATCH_ONLY.fullmatch(matcher):
+        return "Bash" in [name.strip() for name in re.split(r"[|,]", matcher)]
     try:
-        return re.fullmatch(matcher, "Bash") is not None
+        return re.search(matcher, "Bash") is not None
     except re.error:
-        return matcher == "Bash"
+        return False
 
 
 def hook_commands(settings):

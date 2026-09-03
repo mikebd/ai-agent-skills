@@ -24,6 +24,7 @@ not require either checkout.
 - `claude/scripts/rtk-install.sh`: Installs the RTK hook for Claude Code, pinned to rtk's absolute path
 - `claude/scripts/rtk-guard.sh`: Checks that the RTK hook is registered and pinned, and reports duplicate RTK.md guidance
 - `claude/scripts/rtk-hook-probe.py`: Helper for `rtk-guard.sh`; reports whether `settings.json` registers the hook, and whether it is pinned
+- `claude/scripts/rtk-hook-probe-test.py`: Regression tests for the probe, including Claude Code's matcher rules. Run it directly; no dependencies
 - `shared/scripts`: Cross-agent utilities
 - `shared/references`: Cross-agent docs and references
 - `shared/references/agent-runtime`: Shared runtime guidance/docs reusable across agents
