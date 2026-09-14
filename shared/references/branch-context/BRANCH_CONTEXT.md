@@ -78,6 +78,8 @@ Workflow-state lanes:
 Persistent non-workflow lanes:
 
 - `__audit`: ongoing system health, periodic checks, and operational audits.
+- `__discovery`: durable environment, system, or infrastructure discovery
+  findings that outlive any single branch of work.
 - `__review`: review work on other developers' branches.
 - `__util`: reusable utilities, stable reference material, and long-lived
   content that does not fit a workflow-state lane.
@@ -85,8 +87,8 @@ Persistent non-workflow lanes:
   warrants them.
 
 Use semantic lane names in prompts and interpretation (`active`, `done`,
-`audit`, `review`, and so on); the underscore-prefixed directory names are
-implementation details.
+`audit`, `discovery`, `review`, and so on); the underscore-prefixed directory
+names are implementation details.
 
 Persistent lanes are intentionally longer-lived than workflow-state lanes. A
 BC may be promoted into one when stable scripts, outputs, recurring audits,
