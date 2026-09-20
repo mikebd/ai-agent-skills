@@ -81,8 +81,9 @@ Persistent non-workflow lanes:
 - `__discovery`: durable environment, system, or infrastructure discovery
   findings that outlive any single branch of work.
 - `__review`: review work on other developers' branches.
-- `__util`: reusable utilities, stable reference material, and long-lived
-  content that does not fit a workflow-state lane.
+- `__util`: BC-local scripts, binaries, their source code, and supporting
+  material, including experimental or branch-specific tools not delivered for
+  teammates' active product use.
 - Other double-underscore persistent lanes may be added when a durable purpose
   warrants them.
 
@@ -424,6 +425,9 @@ When a workflow repeats, preserve its method as well as its outputs. This can
 include reusable scripts, stable command patterns, manifests, and signal
 definitions. Keep bulky raw artifacts repository-local by default, and reserve
 shared branch files for genuinely shared conclusions and coordination.
+
+Do not put reusable agent workflow instructions in `__util`; keep root-wide
+instructions at the BC root.
 
 Compress large BC log or audit exports in place. Read them with gzip-aware
 tools such as `zcat`, `gunzip -c`, or `jq <(gunzip -c ...)` rather than assuming
