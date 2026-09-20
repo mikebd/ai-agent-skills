@@ -1,7 +1,9 @@
 .idea
 
 # Agentic
+**/.claude
 **/.codex
+**/.junie
 
 ## Worktrees may link `.context` as a symlink; `.context/` only matches dirs.
 .context
