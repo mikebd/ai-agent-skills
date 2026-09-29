@@ -11,7 +11,8 @@ developer to adopt it.
 Read and follow this reference only when the active agent bootstrap explicitly
 sources it. BC is intentionally separate from general agent runtime guidance:
 consumers opt in through their normal startup/bootstrap mechanism, and may use
-runtime guidance without enabling BC.
+runtime guidance without enabling BC. (One section, "Claude Code: BC vs. agent
+memory," is specific to Claude Code; the rest is agent-neutral.)
 
 When this reference is sourced, BC is enabled only if a root resolves for the
 working repository. If no root resolves, proceed normally without BC.
@@ -31,6 +32,7 @@ working repository. If no root resolves, proceed normally without BC.
 - [Work breakdown structures](#work-breakdown-structures)
 - [Plan capture](#plan-capture)
 - [Methods and artifacts](#methods-and-artifacts)
+- [Claude Code: BC vs. agent memory](#claude-code-bc-vs-agent-memory)
 - [Links and commits](#links-and-commits)
 
 ## Root resolution
@@ -433,6 +435,38 @@ Compress large BC log or audit exports in place. Read them with gzip-aware
 tools such as `zcat`, `gunzip -c`, or `jq <(gunzip -c ...)` rather than assuming
 plain-text or uncompressed JSON inputs. Small control and summary artifacts do
 not need compression by default.
+
+## Claude Code: BC vs. agent memory
+
+Claude Code maintains its own persistent memory system
+(`~/.claude/projects/.../memory/`, indexed by `MEMORY.md`). That system is
+private to the individual user's machine and account: it is never
+team-shared, never visible to teammates or other sessions, and does not
+travel with the branch or repository the way BC does.
+
+When an effective BC is in use for the current work (see
+[Reading](#reading)), a finding, decision, reference, or piece of context
+that another teammate or a future session would need is a BC write, not
+an agent-memory write — even when it would also fit one of Claude's memory
+categories (user, feedback, project, reference). Claude's own habit of
+saving to memory must not substitute for recording something in the BC.
+
+Concretely:
+
+- If the user says "capture this to BC," "record this to BC," "save this
+  to BC," or similar, and the content concerns the branch or repository
+  the effective BC covers, write it into the BC (`CONTEXT.md`,
+  `STATE.md`, or a dedicated reference file) — not into agent memory.
+- Reserve agent memory for what genuinely stays personal-scale even with a
+  BC in use: this session's own transient working state, tool preferences
+  unrelated to any BC, or feedback about how the agent should collaborate
+  with this user across repositories in general.
+- When content is both durable/team-discoverable and genuinely
+  user-specific, write the durable part to the BC and only mirror the
+  user-specific residue to agent memory.
+- Default to the BC without asking when content is clearly
+  team-discoverable (findings, references, mappings, decisions); don't
+  make the user choose between BC and memory for that content.
 
 ## Links and commits
 
