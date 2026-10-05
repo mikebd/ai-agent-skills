@@ -148,6 +148,16 @@ relationships, and package status when the work benefits from that structure.
 Use `plans/` for approved implementation baselines. Do not duplicate the full
 WBS in `STATE.md` or turn the WBS into an implementation-task checklist.
 
+The formal BC documents (`CONTEXT.md`, `STATE.md`, `WBS.md`, and captured
+plans) are the BC base protocol. Do not split, relocate, or restructure them
+because of size or line count; thresholds that guide splitting or refactoring
+source code do not apply to them, and exceeding one is not a reason to
+recommend a split. Change their structure only under the rules in this
+reference (for example, lineage for WBS work packages). Other documentation
+in a BC, such as reference notes or audit write-ups, should stay cohesive and
+be decomposed only when that helps the reader, not because a size threshold
+was crossed.
+
 Prefer concise, dated, decision-first notes over diary-style logging. For
 material findings, record enough evidence to re-derive the conclusion, such as
 identifiers, time windows, exact scripts or commands, source paths, or artifact
@@ -374,6 +384,21 @@ Store plans inside the individual BC, never at the BC root:
 Use a sequential, zero-padded number beginning at `001`; determine the next
 number from existing plan files and do not renumber prior plans.
 
+When an effective individual BC is in use, the plan presented for approval
+must state the plan number and slug under which it will be persisted (for
+example, `plans/004-brief-slug.md`), so the approver sees the capture path
+before approving. Capture uses exactly the stated number and slug. This does
+not apply when the plan creates a new BC, because no plan is captured there.
+
+At capture, append the original prompt to the captured plan as an
+`## Original prompt` addendum: the user's exact, unedited prompt that
+initiated the explicit Plan Mode request, in a fenced block. Do not
+paraphrase, summarize, or correct it. The purpose is to give reviewers the
+literal prompt that led to the approved plan, not only the final plan, so they
+can consider alternative initial prompts or be inspired by the one used. The
+addendum is a provenance record, not part of the plan's substantive content:
+it is written once at capture and is not revised as the plan is groomed.
+
 When a WBS exists, link a plan to each existing work package it materially
 advances. Do not create a work package solely to capture or attach a plan,
 including after that plan has completed. Create a new package only when it
@@ -389,7 +414,10 @@ implementation begins. When implementation begins, its substantive content is
 the frozen baseline that governed the work. Do not rewrite that baseline to
 make the plan appear to have anticipated later facts, decisions, or outcomes.
 Substantive content includes the goal, decisions, scope, boundaries,
-implementation approach, and acceptance criteria.
+implementation approach, and acceptance criteria. The `## Original prompt`
+addendum is excluded from substantive content: it is never edited after
+capture, including for typo or formatting repairs, because exactness is its
+purpose.
 
 This lifecycle applies to captured `plans/` records only. It does not freeze a
 living WBS, prescribe the contents of a new BC, or add plan-capture artifacts
