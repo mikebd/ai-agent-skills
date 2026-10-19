@@ -10,6 +10,7 @@ Purpose: single source of truth for what each RMAR document governs.
 - [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md): agent-neutral startup/runtime behavior contract used by agent config pointers.
 - [`POSTGRES_AUDIT.local-wrapper.example.md`](./POSTGRES_AUDIT.local-wrapper.example.md): local/private wrapper template; copy to private config and customize.
 - [`POSTGRES_AUDIT.md`](./POSTGRES_AUDIT.md): reusable database-audit safety/workflow/runbook.
+- [`PR_REVIEW.md`](./PR_REVIEW.md): anchoring, batching, and approval rules for posting review findings to pull requests.
 - [`RTK.md`](./RTK.md): command-selection and wrapper usage policy for RTK.
 - [`TEXT_QUERYING.md`](./TEXT_QUERYING.md): local querying, extraction, and reshaping of structured, semi-structured, and plain-text files.
 
