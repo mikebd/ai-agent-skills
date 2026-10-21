@@ -32,8 +32,13 @@ the reviewed commit.
   not as separate comments.
 - Use a non-blocking comment review unless the user asks to approve or
   request changes.
-- Before posting, drop findings the PR description already acknowledges, or
-  mention them briefly in the summary.
+- Before posting, deduplicate against what is already on the PR: the
+  description, and every finding already posted by other reviewers, human or
+  automated (for example CodeRabbit), in inline comments, review bodies, and
+  resolved or outdated threads. Drop findings already acknowledged or already
+  raised, or mention them briefly in the summary. When you have new evidence or
+  a materially different severity for an existing finding, reply on its thread
+  rather than opening a duplicate.
 - Show the full comment text and wait for approval before posting; posting is
   outward-facing.
 - After posting, read the comments back and confirm each landed on the
