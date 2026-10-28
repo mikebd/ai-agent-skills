@@ -87,7 +87,10 @@ the rewritten command. See
 1. Clone this repo locally.
 2. Copy [`claude/CLAUDE.md.example`](claude/CLAUDE.md.example) to
    `~/.claude/CLAUDE.md` (or merge it into an existing one) and replace
-   `/ABS/PATH/TO/ai-agent-skills` with your clone path.
+   `/ABS/PATH/TO/ai-agent-skills` with your clone path. Keep its `DOC_MAP.md`
+   import; an existing `~/.claude/CLAUDE.md` that imports only
+   `DEVELOPER_INSTRUCTIONS.md` and `EXECUTION_MODEL.md` should add it (see
+   [Bootstrap: import DOC_MAP.md](claude/EXECUTION_MODEL.md#bootstrap-import-doc_mapmd)).
 3. Optionally merge [`claude/settings.json.example`](claude/settings.json.example)
    into `~/.claude/settings.json`. It deliberately omits package-install
    commands; see [Package operations are a separate, deliberate opt-in](claude/EXECUTION_MODEL.md#package-operations-are-a-separate-deliberate-opt-in).

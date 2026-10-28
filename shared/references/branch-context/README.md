@@ -47,8 +47,8 @@ independent source lines share the same configuration value:
 
 ```toml
 developer_instructions = """
-At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md and /ABS/PATH/TO/ai-agent-skills/codex/EXECUTION_MODEL.md before running commands.
-At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/branch-context/BRANCH_CONTEXT.md before running commands.
+At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md, /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DOC_MAP.md and /ABS/PATH/TO/ai-agent-skills/codex/EXECUTION_MODEL.md before running commands or drafting anything for the user.
+At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/branch-context/BRANCH_CONTEXT.md before running commands or drafting anything for the user.
 """
 ```
 
@@ -57,6 +57,7 @@ carry both independent references:
 
 ```markdown
 @/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md
+@/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DOC_MAP.md
 @/ABS/PATH/TO/ai-agent-skills/claude/EXECUTION_MODEL.md
 
 @/ABS/PATH/TO/ai-agent-skills/shared/references/branch-context/BRANCH_CONTEXT.md

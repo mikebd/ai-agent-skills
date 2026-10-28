@@ -8,6 +8,35 @@ calls for constrained execution, elevated execution, a scoped approval, or an
 Reference resolution rule: treat relative doc paths in this file as
 repo-root-relative unless written as an explicit relative link.
 
+## Bootstrap: import DOC_MAP.md
+
+Import [`DOC_MAP.md`](../shared/references/agent-runtime/DOC_MAP.md) in
+`<agent-home>/CLAUDE.md` alongside `DEVELOPER_INSTRUCTIONS.md` and this
+overlay, as [`CLAUDE.md.example`](./CLAUDE.md.example) does:
+
+```markdown
+@/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md
+@/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DOC_MAP.md
+@/ABS/PATH/TO/ai-agent-skills/claude/EXECUTION_MODEL.md
+```
+
+`DEVELOPER_INSTRUCTIONS.md` deliberately names no task-specific docs; its
+bootstrap says to read `DOC_MAP.md` at session start, and the map is the only
+route to docs such as `PR_REVIEW.md`. Importing just the contract leaves that
+read as a manual step, and it gets skipped: a session that opens with a skill,
+a forked `/code-review`, or a background-task notification has no obvious
+"start", and the agent goes straight to the task. Nothing then mentions the
+task doc, so its rules silently don't apply. This happened in practice: review
+comments were drafted and posted without `PR_REVIEW.md`, which the agent found
+only when asked to look. The map is small, so importing it costs little.
+
+To check a session, ask:
+
+> Without reading any files: which runtime doc governs drafting PR review
+> comments? If you don't know, say "don't know".
+
+"Don't know" means `DOC_MAP.md` is not in context.
+
 ## Term mapping
 
 Claude Code has no per-command sandbox/escalation split of the kind Codex uses.

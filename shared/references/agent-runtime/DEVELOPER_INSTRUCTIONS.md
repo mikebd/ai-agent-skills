@@ -9,8 +9,10 @@ Canonical location (repo-root relative): `shared/references/agent-runtime/DEVELO
 Reference resolution rule: treat relative doc paths in this file as repo-root-relative.
 
 ## Bootstrap
-- At session start, read shared/references/agent-runtime/DOC_MAP.md.
+- At session start, read shared/references/agent-runtime/DOC_MAP.md, unless the agent's bootstrap already loaded it.
 - Use DOC_MAP.md as the source of truth for which RMAR docs to read for the current task.
+  Recheck it whenever the task changes mid-session (for example, from reviewing
+  code to drafting PR comments), not only at session start.
 - Read the execution-model overlay for the active agent before requesting or
   configuring command approvals; DOC_MAP.md lists the available overlays.
 - Before selecting local shell commands, read the RMAR docs that govern command choice for the current task.

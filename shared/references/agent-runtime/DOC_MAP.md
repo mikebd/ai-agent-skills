@@ -10,7 +10,7 @@ Purpose: single source of truth for what each RMAR document governs.
 - [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md): agent-neutral startup/runtime behavior contract used by agent config pointers.
 - [`POSTGRES_AUDIT.local-wrapper.example.md`](./POSTGRES_AUDIT.local-wrapper.example.md): local/private wrapper template; copy to private config and customize.
 - [`POSTGRES_AUDIT.md`](./POSTGRES_AUDIT.md): reusable database-audit safety/workflow/runbook.
-- [`PR_REVIEW.md`](./PR_REVIEW.md): anchoring, batching, and approval rules for posting review findings to pull requests.
+- [`PR_REVIEW.md`](./PR_REVIEW.md): verifying, rating, drafting, and posting PR/MR review comments, including turning automated or delegated review findings into proposed comments, and approve or request-changes reviews.
 - [`RTK.md`](./RTK.md): command-selection and wrapper usage policy for RTK.
 - [`TEXT_QUERYING.md`](./TEXT_QUERYING.md): local querying, extraction, and reshaping of structured, semi-structured, and plain-text files.
 
@@ -29,5 +29,6 @@ introducing agent-specific wording into a shared doc.
 - Keep [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md) minimal and avoid duplicating task-specific trigger logic already owned by mapped docs.
 - Keep global runtime/safety/approval policy in [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md).
 - Each mapped RMAR doc must define its own task-specific trigger semantics ("read this when...").
+- Write each Ownership entry so it names the requests that should activate the doc, including preparatory stages (verifying, drafting, proposing), not only the final action; agents choose docs from these entries.
 - When adding a new mapped doc, add or verify trigger semantics in that doc instead of expanding [`DEVELOPER_INSTRUCTIONS.md`](./DEVELOPER_INSTRUCTIONS.md).
 - Keep agent-specific mechanics out of mapped RMAR docs; put them in the execution model overlay for that agent.

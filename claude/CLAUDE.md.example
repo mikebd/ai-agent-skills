@@ -7,11 +7,18 @@ Replace every /ABS/PATH/TO/ai-agent-skills with your local clone path.
 Both references below are independent opt-ins. Keep only the lines you want:
 sourcing runtime guidance does not imply sourcing Branch Context, and BC can be
 sourced on its own.
+
+Keep DOC_MAP.md with DEVELOPER_INSTRUCTIONS.md: it is the only index of the
+task-specific runtime docs (PR reviews, database audits, ...). Without the
+import, the agent finds them only if it carries out the "read DOC_MAP.md"
+bootstrap step itself, which a session that opens with a skill or a background
+task can skip.
 -->
 
 # Agent runtime references
 
 @/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md
+@/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DOC_MAP.md
 @/ABS/PATH/TO/ai-agent-skills/claude/EXECUTION_MODEL.md
 
 # Branch Context

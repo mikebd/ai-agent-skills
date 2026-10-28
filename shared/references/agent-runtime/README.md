@@ -46,7 +46,7 @@ To add another agent:
 
 ```toml
 developer_instructions = """
-At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md and /ABS/PATH/TO/ai-agent-skills/codex/EXECUTION_MODEL.md before running commands.
+At session start, read /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md, /ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DOC_MAP.md and /ABS/PATH/TO/ai-agent-skills/codex/EXECUTION_MODEL.md before running commands or drafting anything for the user.
 """
 ```
 
@@ -68,13 +68,20 @@ for the check to run before trusting activation on a new surface or platform.
 
 ```markdown
 @/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DEVELOPER_INSTRUCTIONS.md
+@/ABS/PATH/TO/ai-agent-skills/shared/references/agent-runtime/DOC_MAP.md
 @/ABS/PATH/TO/ai-agent-skills/claude/EXECUTION_MODEL.md
 ```
 
 3. Replace `/ABS/PATH/TO/ai-agent-skills` with your local clone path.
 
 `@`-prefixed lines are imports: Claude Code inlines those files into the
-session at startup, so the runtime contract is in context deterministically. If
+session at startup, so the runtime contract is in context deterministically.
+Import [`DOC_MAP.md`](./DOC_MAP.md) too, not only
+`DEVELOPER_INSTRUCTIONS.md`: the map is how the agent learns that task-specific
+docs such as [`PR_REVIEW.md`](./PR_REVIEW.md) exist. If an existing
+`~/.claude/CLAUDE.md` imports only the first two lines, add it. See
+[Bootstrap: import DOC_MAP.md](../../../claude/EXECUTION_MODEL.md#bootstrap-import-doc_mapmd)
+for why. If
 you would rather have them read on demand,
 [`claude/CLAUDE.md.pointer.example`](../../../claude/CLAUDE.md.pointer.example)
 uses plain instruction lines instead.

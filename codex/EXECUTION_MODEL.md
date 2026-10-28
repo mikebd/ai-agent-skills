@@ -8,6 +8,17 @@ calls for constrained execution, elevated execution, a scoped approval, or an
 Reference resolution rule: treat relative doc paths in this file as
 repo-root-relative unless written as an explicit relative link.
 
+## Bootstrap: name DOC_MAP.md
+
+List [`DOC_MAP.md`](../shared/references/agent-runtime/DOC_MAP.md) in the
+`developer_instructions` read line next to `DEVELOPER_INSTRUCTIONS.md`, as the
+[Codex bootstrap example](../shared/references/agent-runtime/README.md#example-codex-bootstrap-via-codexconfigtoml)
+does. The map is the only route to task-specific docs such as `PR_REVIEW.md`;
+left to the contract's own "read DOC_MAP.md" step, it can be skipped when a
+session goes straight to a task. The probe under
+[Which surfaces this covers](#which-surfaces-this-covers) checks that it
+arrived.
+
 ## Term mapping
 
 | Neutral term | Codex mechanism |
