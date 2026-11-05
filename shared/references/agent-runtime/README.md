@@ -78,7 +78,7 @@ for the check to run before trusting activation on a new surface or platform.
 session at startup, so the runtime contract is in context deterministically.
 Import [`DOC_MAP.md`](./DOC_MAP.md) too, not only
 `DEVELOPER_INSTRUCTIONS.md`: the map is how the agent learns that task-specific
-docs such as [`PR_REVIEW.md`](./PR_REVIEW.md) exist. If an existing
+docs such as [`PULL_REQUEST.md`](./PULL_REQUEST.md) exist. If an existing
 `~/.claude/CLAUDE.md` imports only the first two lines, add it. See
 [Bootstrap: import DOC_MAP.md](../../../claude/EXECUTION_MODEL.md#bootstrap-import-doc_mapmd)
 for why. If

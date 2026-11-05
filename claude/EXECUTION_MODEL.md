@@ -22,13 +22,12 @@ overlay, as [`CLAUDE.md.example`](./CLAUDE.md.example) does:
 
 `DEVELOPER_INSTRUCTIONS.md` deliberately names no task-specific docs; its
 bootstrap says to read `DOC_MAP.md` at session start, and the map is the only
-route to docs such as `PR_REVIEW.md`. Importing just the contract leaves that
-read as a manual step, and it gets skipped: a session that opens with a skill,
-a forked `/code-review`, or a background-task notification has no obvious
-"start", and the agent goes straight to the task. Nothing then mentions the
-task doc, so its rules silently don't apply. This happened in practice: review
-comments were drafted and posted without `PR_REVIEW.md`, which the agent found
-only when asked to look. The map is small, so importing it costs little.
+route to docs such as `PULL_REQUEST.md`. Importing just the contract leaves
+that read as a manual step, and it gets skipped: a session that opens with a
+skill, a forked `/code-review`, or a background-task notification has no
+obvious "start", and the agent goes straight to the task. Nothing then
+mentions the task doc, so its rules silently don't apply. The map is small, so
+importing it costs little.
 
 To check a session, ask:
 
