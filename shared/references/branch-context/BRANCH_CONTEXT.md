@@ -82,6 +82,12 @@ Persistent non-workflow lanes:
 - `__audit`: ongoing system health, periodic checks, and operational audits.
 - `__discovery`: durable environment, system, or infrastructure discovery
   findings that outlive any single branch of work.
+- `__operations`: durable operational knowledge: safe and effective
+  procedures for running, maintaining, and intervening in systems, and the
+  tooling that supports them, informed by their infrastructure, code, data,
+  and workloads (request serving, batch and scheduled jobs, queues). Often
+  paired with `__discovery`, which holds the facts these procedures rely on;
+  distinct from `__audit`'s periodic health checks.
 - `__review`: review work on other developers' branches.
 - `__util`: BC-local scripts, binaries, their source code, and supporting
   material, including experimental or branch-specific tools not delivered for
@@ -188,8 +194,13 @@ such as a merge request) is host-platform collaboration metadata, not
 committed product source. It need not remain independently usable without BC
 access the way source, tests, CI, contracts, configuration, documentation,
 runbooks, release artifacts, and ADRs must. A PR description may therefore
-include a Branch Context link — for example, at the top, pointing to the BC's
-origin path rather than a specific file — as a convenience for reviewers.
+include a Branch Context link as a convenience for reviewers. When a BC is in
+use for the work, put the link as the first line of the description, in
+Markdown form: `[Branch Context](<url>)`. `<url>` is the remote `tree` URL of
+the BC directory (the BC's origin path, not a specific file) on the BC
+repository's branch. Keep the angle brackets so paths with spaces or
+parentheses still resolve. A lane transition changes the path, so update the
+link if the BC moves after the PR is opened.
 
 This exception is narrow: it covers only the PR/MR description field itself.
 Commit messages, code comments, and any other committed repository content
