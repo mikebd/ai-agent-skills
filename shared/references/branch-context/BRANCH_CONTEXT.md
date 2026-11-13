@@ -26,6 +26,7 @@ working repository. If no root resolves, proceed normally without BC.
 - [File roles](#file-roles)
 - [Product insulation](#product-insulation)
   - [PR description exception](#pr-description-exception)
+  - [Issue tracker exception](#issue-tracker-exception)
 - [Reading](#reading)
 - [Instruction freshness](#instruction-freshness)
 - [Writing and lifecycle](#writing-and-lifecycle)
@@ -89,6 +90,19 @@ Persistent non-workflow lanes:
   paired with `__discovery`, which holds the facts these procedures rely on;
   distinct from `__audit`'s periodic health checks.
 - `__review`: review work on other developers' branches.
+- `__triage`: first-response investigation of a reported failure or
+  incident, such as a broken CI run: its cause, impact and owner, and the
+  disposition (a fix in the owning repository, a ticket, follow-up work, or
+  closing it as a one-off). Reactive, unlike `_research`.
+  - Triage BCs are usually named for the incident rather than a branch, so
+    they are selected by explicit direction rather than branch resolution.
+  - One workable layout, not a requirement:
+    `__triage/<YYYY-MM-DD>/<repo-name>_<topic>/`. Date it by the day triage
+    began, use the repository where the problem surfaced, and name the topic
+    after the symptom rather than a presumed cause.
+  - A triage BC normally stays in place as the record of the investigation.
+    Follow-up implementation gets its own BC, linked with `Prev BC` and
+    `Next BC`.
 - `__util`: BC-local scripts, binaries, their source code, and supporting
   material, including experimental or branch-specific tools not delivered for
   teammates' active product use.
@@ -202,9 +216,29 @@ repository's branch. Keep the angle brackets so paths with spaces or
 parentheses still resolve. A lane transition changes the path, so update the
 link if the BC moves after the PR is opened.
 
-This exception is narrow: it covers only the PR/MR description field itself.
-Commit messages, code comments, and any other committed repository content
-remain covered by the insulation rule above and must not reference BC.
+This exception and the [issue tracker exception](#issue-tracker-exception)
+are narrow. They cover only the PR/MR description field and issue-tracker
+tickets. Commit messages, code comments, and any other committed repository
+content remain covered by the insulation rule above and must not reference
+BC.
+
+### Issue tracker exception
+
+An issue-tracker ticket, such as a Jira issue or a GitHub issue, is
+collaboration metadata in the same sense as a PR description. It may link a
+BC as a convenience for whoever works the ticket.
+
+- Prefer the tracker's native web-link field, where one exists (for example,
+  Jira's web links), over the ticket body. Give the link a short title that
+  names the BC's role, such as `Triage BC`. Without such a field, put the
+  link in the ticket body in the PR description's Markdown form.
+- Use the same `<url>` as for a PR description: the remote `tree` URL of the
+  BC directory.
+- Add the link once the BC content is pushed, so it resolves, and update it
+  if the BC moves lanes.
+
+The link is a convenience, not a dependency. The ticket's own text must state
+the problem, evidence and decision well enough to act on without BC access.
 
 ## Reading
 
